@@ -1,14 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WasteObject {
-  const WasteObject(
+  WasteObject(
       {this.id,
+      this.email,
       required this.title,
       required this.desc,
       required this.cat,
       required this.adr,
       required this.price});
 
+  String? email = FirebaseAuth.instance.currentUser?.email;
   final String? id;
   final String title;
   final String desc;
@@ -18,6 +21,7 @@ class WasteObject {
 
   toJson() {
     return {
+      'Email': email,
       'Title': title,
       'Description': desc,
       'Category': cat,
@@ -30,6 +34,7 @@ class WasteObject {
     final data = doc.data()!;
     return WasteObject(
         id: doc.id,
+        email: data['Email'],
         title: data['Title'],
         desc: data['Description'],
         cat: data['Category'],

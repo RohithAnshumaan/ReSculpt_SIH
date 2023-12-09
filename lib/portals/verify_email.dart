@@ -26,7 +26,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
     if (isVerified) {
       timer?.cancel();
       // Navigate to the '/account' route after email verification
-      Navigator.of(context).pushNamed('/account');
+      Navigator.of(context).pushNamed('/signin');
     }
   }
 
