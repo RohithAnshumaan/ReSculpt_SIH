@@ -58,23 +58,21 @@ class _FillDetailsState extends State<FillDetails> {
     final description = _desc.text.trim();
     final category = _cat.text.trim();
     final address = _adr.text.trim();
-    const type = 'waste';
     final double price = double.parse(_price.text.trim());
     final email = FirebaseAuth.instance.currentUser?.email;
     WasteObject obj = WasteObject(
-        type: type,
         email: email,
         title: title,
         desc: description,
         cat: category,
         adr: address,
         price: price);
-    await _db.collection('items').add(obj.toJson());
+    await _db.collection('waste').add(obj.toJson());
   }
 
   Future _storeImageToDb(File selectedImage) async {
     final wasteRef = storageRef.child("Waste items");
-    final imageRef = wasteRef.child("yourImg.png");
+    final imageRef = wasteRef.child("yourImg");
     await imageRef.putFile(_selectedImage);
   }
 

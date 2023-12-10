@@ -23,9 +23,8 @@ class _DisplayCardState extends State<DisplayCard> {
 
   void _initializeEventsStream() {
     _itemsStream = FirebaseFirestore.instance
-        .collection("items")
+        .collection("waste")
         .where("Email", isEqualTo: userEmail)
-        .where("Type", isEqualTo: 'waste')
         .snapshots();
   }
 

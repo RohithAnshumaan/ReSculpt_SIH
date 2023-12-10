@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class WasteObject {
   WasteObject(
       {this.id,
-      required this.type,
       required this.email,
       required this.title,
       required this.desc,
@@ -12,7 +11,6 @@ class WasteObject {
       required this.price});
 
   final String? email;
-  final String type;
   final String? id;
   final String title;
   final String desc;
@@ -22,7 +20,6 @@ class WasteObject {
 
   toJson() {
     return {
-      'Type': type,
       'Email': email,
       'Title': title,
       'Description': desc,
@@ -36,7 +33,6 @@ class WasteObject {
     final data = doc.data()!;
     return WasteObject(
         id: doc.id,
-        type: data['Type'],
         email: data['Email'],
         title: data['Title'],
         desc: data['Description'],

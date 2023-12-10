@@ -19,10 +19,7 @@ class _DisplayAllState extends State<DisplayAll> {
   }
 
   void _initializeEventsStream() {
-    _itemsStream = FirebaseFirestore.instance
-        .collection("items")
-        .where("Type", isEqualTo: "waste")
-        .snapshots();
+    _itemsStream = FirebaseFirestore.instance.collection("waste").snapshots();
   }
 
   @override
