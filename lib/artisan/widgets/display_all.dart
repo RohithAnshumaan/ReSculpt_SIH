@@ -19,7 +19,10 @@ class _DisplayAllState extends State<DisplayAll> {
   }
 
   void _initializeEventsStream() {
-    _itemsStream = FirebaseFirestore.instance.collection("items").snapshots();
+    _itemsStream = FirebaseFirestore.instance
+        .collection("items")
+        .where("Type", isEqualTo: "waste")
+        .snapshots();
   }
 
   @override
@@ -38,6 +41,7 @@ class _DisplayAllState extends State<DisplayAll> {
           itemCount: itemsData.length,
           itemBuilder: ((context, index) {
             final item = itemsData[index].data();
+            final email = item['Email'];
             final title = item['Title'];
             final desc = item['Description'];
             final cat = item['Category'];
@@ -56,6 +60,7 @@ class _DisplayAllState extends State<DisplayAll> {
                       ),
                       child: Column(
                         children: [
+                          Text(email),
                           Text(title),
                           Text(desc),
                           Text(cat),

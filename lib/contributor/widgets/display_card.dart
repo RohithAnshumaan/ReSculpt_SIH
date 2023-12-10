@@ -25,6 +25,7 @@ class _DisplayCardState extends State<DisplayCard> {
     _itemsStream = FirebaseFirestore.instance
         .collection("items")
         .where("Email", isEqualTo: userEmail)
+        .where("Type", isEqualTo: 'waste')
         .snapshots();
   }
 
@@ -44,7 +45,7 @@ class _DisplayCardState extends State<DisplayCard> {
           itemCount: itemsData.length,
           itemBuilder: ((context, index) {
             final item = itemsData[index].data();
-            final email = item['Email'];
+            // final email = item['Email'];
             final title = item['Title'];
             final desc = item['Description'];
             final cat = item['Category'];
@@ -63,7 +64,7 @@ class _DisplayCardState extends State<DisplayCard> {
                       ),
                       child: Column(
                         children: [
-                          Text(email),
+                          // Text(email),
                           Text(title),
                           Text(desc),
                           Text(cat),

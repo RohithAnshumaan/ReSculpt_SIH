@@ -6,14 +6,14 @@ import 'package:resculpt/models/waste_object.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
-class FillDetails extends StatefulWidget {
-  const FillDetails({super.key});
+class ProdDetails extends StatefulWidget {
+  const ProdDetails({super.key});
 
   @override
-  State<FillDetails> createState() => _FillDetailsState();
+  State<ProdDetails> createState() => _ProdDetailsState();
 }
 
-class _FillDetailsState extends State<FillDetails> {
+class _ProdDetailsState extends State<ProdDetails> {
   late File _selectedImage;
   final _db = FirebaseFirestore.instance;
   final storageRef = FirebaseStorage.instance.ref();
@@ -58,7 +58,7 @@ class _FillDetailsState extends State<FillDetails> {
     final description = _desc.text.trim();
     final category = _cat.text.trim();
     final address = _adr.text.trim();
-    const type = 'waste';
+    const type = 'product';
     final double price = double.parse(_price.text.trim());
     final email = FirebaseAuth.instance.currentUser?.email;
     WasteObject obj = WasteObject(
