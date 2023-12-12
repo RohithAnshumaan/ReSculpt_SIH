@@ -1,4 +1,6 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DisplayAll extends StatefulWidget {
@@ -9,6 +11,8 @@ class DisplayAll extends StatefulWidget {
 }
 
 class _DisplayAllState extends State<DisplayAll> {
+  String? userEmail = FirebaseAuth.instance.currentUser?.email;
+  final storage = FirebaseStorage.instance.ref();
   late Stream<QuerySnapshot<Map<String, dynamic>>> _itemsStream =
       const Stream.empty();
 
@@ -20,6 +24,39 @@ class _DisplayAllState extends State<DisplayAll> {
 
   void _initializeEventsStream() {
     _itemsStream = FirebaseFirestore.instance.collection("waste").snapshots();
+  }
+
+  // Future<String> getImageUrl(dynamic id) async {
+  //   final waste = storage.child('waste');
+  //   final imgRef = waste.child('$id.png');
+  //   final networkImgUrl = await imgRef.getDownloadURL();
+  //   return networkImgUrl;
+  // }
+
+  Future<String> getImageUrl(dynamic id) async {
+    Reference wastesRef = storage.child('waste');
+    try {
+      ListResult result = await wastesRef.listAll();
+
+      for (Reference userRef in result.prefixes) {
+        ListResult userItems = await userRef.listAll();
+
+        for (Reference imageRef in userItems.items) {
+          String imageName = imageRef.name
+              .split('.')
+              .first; // Get image name without extension
+
+          if (imageName == id) {
+            String downloadURL = await imageRef.getDownloadURL();
+            return downloadURL;
+          }
+        }
+      }
+      return '';
+    } catch (e) {
+      // print('Error retrieving images: $e');
+      return '';
+    }
   }
 
   @override
@@ -38,40 +75,76 @@ class _DisplayAllState extends State<DisplayAll> {
           itemCount: itemsData.length,
           itemBuilder: ((context, index) {
             final item = itemsData[index].data();
-            final email = item['Email'];
+            final id = item['ImgId'];
+            print('id:$id');
             final title = item['Title'];
             final desc = item['Description'];
             final cat = item['Category'];
             final ad = item['Address'];
             final price = item['Price'];
-
-            return ListTile(
-              subtitle: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Card(
-                      elevation: 7,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
+            return FutureBuilder(
+                future: getImageUrl(id),
+                builder: ((context, urlSnapshot) {
+                  if (urlSnapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (urlSnapshot.hasError) {
+                    // print('Error loading image: ${urlSnapshot.error}');
+                    return const Text('Error loading image');
+                  } else if (!urlSnapshot.hasData || urlSnapshot.data == null) {
+                    return const Text('No image available');
+                  } else {
+                    return ListTile(
+                      subtitle: Column(
                         children: [
-                          Text(email),
-                          Text(title),
-                          Text(desc),
-                          Text(cat),
-                          Text(ad),
-                          Text(price.toString()),
-                          ElevatedButton(
-                              onPressed: () {}, child: const Text('Buy'))
+                          Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Card(
+                                elevation: 7,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Image on the left
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SizedBox(
+                                        width: 100,
+                                        height: 100,
+                                        child: Image.network(
+                                          urlSnapshot
+                                              .data!, // Use the retrieved URL here
+                                          fit: BoxFit
+                                              .cover, // Adjust as per your UI requirement
+                                        ),
+                                      ),
+                                    ),
+                                    // Text on the right
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(title),
+                                            Text(desc),
+                                            Text(cat),
+                                            Text(ad),
+                                            Text(price.toString()),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ))
                         ],
                       ),
-                    ),
-                  )
-                ],
-              ),
-            );
+                    );
+                  }
+                }));
           }),
         );
       }),

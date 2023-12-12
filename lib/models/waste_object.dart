@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class WasteObject {
   WasteObject(
       {this.id,
+      this.imgId,
       required this.email,
       required this.title,
       required this.desc,
@@ -10,6 +11,7 @@ class WasteObject {
       required this.adr,
       required this.price});
 
+  final dynamic imgId;
   final String? email;
   final String? id;
   final String title;
@@ -20,6 +22,7 @@ class WasteObject {
 
   toJson() {
     return {
+      'ImgId': imgId,
       'Email': email,
       'Title': title,
       'Description': desc,

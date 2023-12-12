@@ -6,6 +6,8 @@ import 'package:resculpt/models/waste_object.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
+import 'package:resculpt/randomkey.dart';
+
 class FillDetails extends StatefulWidget {
   const FillDetails({super.key});
 
@@ -17,6 +19,7 @@ class _FillDetailsState extends State<FillDetails> {
   late File _selectedImage;
   final _db = FirebaseFirestore.instance;
   final storageRef = FirebaseStorage.instance.ref();
+  final email = FirebaseAuth.instance.currentUser?.email;
 
   List<DropdownMenuEntry<dynamic>> dropdownMenuEntries = [
     const DropdownMenuEntry(value: 1, label: "plastic"),
@@ -53,14 +56,56 @@ class _FillDetailsState extends State<FillDetails> {
     super.dispose();
   }
 
+  void showAlertDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future submitDetails() async {
     final title = _title.text.trim();
     final description = _desc.text.trim();
     final category = _cat.text.trim();
     final address = _adr.text.trim();
     final double price = double.parse(_price.text.trim());
-    final email = FirebaseAuth.instance.currentUser?.email;
+    final dynamic imgId = await _pickImageFromGallery();
+
+    if (imgId == null) {
+      return AlertDialog(
+        title: const Text('ERROR'),
+        content: const Text('Image not found.'),
+        actions: [
+          TextButton(
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.deepPurple),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+      );
+    }
     WasteObject obj = WasteObject(
+        imgId: imgId,
         email: email,
         title: title,
         desc: description,
@@ -71,9 +116,12 @@ class _FillDetailsState extends State<FillDetails> {
   }
 
   Future _storeImageToDb(File selectedImage) async {
-    final wasteRef = storageRef.child("Waste items");
-    final imageRef = wasteRef.child("yourImg");
+    final randId = randomIdGenerator();
+    final wasteRef = storageRef.child("waste");
+    final itemRef = wasteRef.child("$email");
+    final imageRef = itemRef.child("$randId.png");
     await imageRef.putFile(_selectedImage);
+    return randId;
   }
 
   Future _pickImageFromGallery() async {
@@ -81,10 +129,9 @@ class _FillDetailsState extends State<FillDetails> {
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (returnedImage == null) return;
-    setState(() {
-      _selectedImage = File(returnedImage.path);
-    });
-    _storeImageToDb(_selectedImage);
+    _selectedImage = File(returnedImage.path);
+    final imgId = await _storeImageToDb(_selectedImage);
+    return imgId;
   }
 
   @override
@@ -115,12 +162,6 @@ class _FillDetailsState extends State<FillDetails> {
           TextField(
             controller: _price,
             decoration: const InputDecoration(hintText: "Enter price"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              _pickImageFromGallery();
-            },
-            child: const Text('Upload Image'),
           ),
           ElevatedButton(
             onPressed: () {
