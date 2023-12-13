@@ -3,6 +3,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:resculpt/portals/signin.dart';
+import 'package:resculpt/portals/verify_email.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -57,7 +59,13 @@ class _SignupState extends State<Signup> {
           uname,
           email,
         );
-        Navigator.of(context).pushNamed('/verify');
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const VerifyEmail(),
+          ),
+        );
         _usernameController.clear();
         _emailController.clear();
         _passwordController.clear();
@@ -159,7 +167,13 @@ class _SignupState extends State<Signup> {
                   ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/signin');
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Signin(),
+                  ),
+                );
               },
               child: const Text("Already have an account?"),
             ),

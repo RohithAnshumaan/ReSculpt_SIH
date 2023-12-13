@@ -2,6 +2,13 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:resculpt/artisan/artisan_home.dart';
+import 'package:resculpt/artisan/artisan_home1.dart';
+import 'package:resculpt/contributor/contributor_home.dart';
+import 'package:resculpt/contributor/contributor_home1.dart';
+import 'package:resculpt/portals/forgot_pass.dart';
+import 'package:resculpt/portals/signup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -14,6 +21,10 @@ class _SigninState extends State<Signin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  Future<void> storeUserType(String userType) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userType', userType);
+  }
   bool _isLoading = false;
 
   @override
@@ -23,7 +34,11 @@ class _SigninState extends State<Signin> {
     super.dispose();
   }
 
+
+  void signinContributor() async {
+
   void signinCont() async {
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -34,6 +49,14 @@ class _SigninState extends State<Signin> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
+        await storeUserType('contributor');
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ContributorHome(),
+          ),
+        );
         Navigator.of(context).pushReplacementNamed('/conhome');
         _emailController.clear();
         _passwordController.clear();
@@ -57,6 +80,8 @@ class _SigninState extends State<Signin> {
     }
   }
 
+
+  void signinArtisan() async {
   void signinArt() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -68,6 +93,14 @@ class _SigninState extends State<Signin> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
+        await storeUserType('artisan');
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ArtisanHome(),
+          ),
+        );
         Navigator.of(context).pushReplacementNamed('/arthome');
         _emailController.clear();
         _passwordController.clear();
@@ -142,6 +175,13 @@ class _SigninState extends State<Signin> {
               children: [
                 TextButton(
                   onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPassword(),
+                      ),
+                    );
                     Navigator.of(context).pushNamed('/forgotpassword');
                   },
                   child: const Text("Forgot password"),
@@ -149,6 +189,11 @@ class _SigninState extends State<Signin> {
               ],
             ),
             ElevatedButton(
+              onPressed: _isLoading ? null : signinContributor,
+              child: const Text("Signin as Contributor"),
+            ),
+            ElevatedButton(
+              onPressed: _isLoading ? null : signinArtisan,
               onPressed: _isLoading ? null : signinCont,
               child: const Text("Signin to Contribute"),
             ),
@@ -158,6 +203,14 @@ class _SigninState extends State<Signin> {
             ),
             TextButton(
               onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Signup(),
+                  ),
+                );
+                ;
                 Navigator.of(context).pushNamed('/');
               },
               child: const Text("Don't have an account?"),

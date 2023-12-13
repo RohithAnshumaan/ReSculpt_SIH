@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:resculpt/contributor/fill_details.dart';
 import 'package:resculpt/contributor/widgets/display_card.dart';
+import 'package:resculpt/portals/my_account.dart';
 // import 'package:prototype/image_upload.dart';
 
 class ContributorHome extends StatefulWidget {
@@ -18,19 +19,35 @@ class _ContributorHomeState extends State<ContributorHome> {
         centerTitle: true,
         title: const Text('Your listed items'),
       ),
-      body: Column(children: [
-        const DisplayCard(),
-        Center(
-          child: ElevatedButton(
+      body: Column(
+        children: [
+          const DisplayCard(),
+          Center(
+            child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FillDetails()));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FillDetails(),
+                  ),
+                );
               },
-              child: const Text('Upload')),
-        ),
-      ]),
+              child: const Text('Upload'),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MyAccount(),
+            ),
+          );
+        },
+        child: const Text("account"),
+      ),
     );
   }
 }
