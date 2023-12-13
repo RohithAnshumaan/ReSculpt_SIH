@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:resculpt/portals/signin.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
@@ -26,7 +27,12 @@ class _VerifyEmailState extends State<VerifyEmail> {
     if (isVerified) {
       timer?.cancel();
       // Navigate to the '/account' route after email verification
-      Navigator.of(context).pushNamed('/signin');
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Signin(),
+        ),
+      );
     }
   }
 

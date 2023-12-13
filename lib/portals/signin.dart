@@ -2,6 +2,13 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:resculpt/artisan/artisan_home.dart';
+import 'package:resculpt/artisan/artisan_home1.dart';
+import 'package:resculpt/contributor/contributor_home.dart';
+import 'package:resculpt/contributor/contributor_home1.dart';
+import 'package:resculpt/portals/forgot_pass.dart';
+import 'package:resculpt/portals/signup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -14,6 +21,11 @@ class _SigninState extends State<Signin> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  Future<void> storeUserType(String userType) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userType', userType);
+  }
+
   bool _isLoading = false;
 
   @override
@@ -23,7 +35,7 @@ class _SigninState extends State<Signin> {
     super.dispose();
   }
 
-  void signinCont() async {
+  void signinContributor() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -34,7 +46,14 @@ class _SigninState extends State<Signin> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        Navigator.of(context).pushReplacementNamed('/conhome');
+        await storeUserType('contributor');
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ContributorHome(),
+          ),
+        );
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {
@@ -57,7 +76,7 @@ class _SigninState extends State<Signin> {
     }
   }
 
-  void signinArt() async {
+  void signinArtisan() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -68,7 +87,14 @@ class _SigninState extends State<Signin> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        Navigator.of(context).pushReplacementNamed('/arthome');
+        await storeUserType('artisan');
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ArtisanHome(),
+          ),
+        );
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {
@@ -142,23 +168,36 @@ class _SigninState extends State<Signin> {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed('/forgotpassword');
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPassword(),
+                      ),
+                    );
                   },
                   child: const Text("Forgot password"),
                 ),
               ],
             ),
             ElevatedButton(
-              onPressed: _isLoading ? null : signinCont,
-              child: const Text("Signin to Contribute"),
+              onPressed: _isLoading ? null : signinContributor,
+              child: const Text("Signin as Contributor"),
             ),
             ElevatedButton(
-              onPressed: _isLoading ? null : signinArt,
+              onPressed: _isLoading ? null : signinArtisan,
               child: const Text("Signin as Artisan"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/');
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Signup(),
+                  ),
+                );
+                ;
               },
               child: const Text("Don't have an account?"),
             ),
