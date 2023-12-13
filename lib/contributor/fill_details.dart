@@ -21,7 +21,7 @@ class _FillDetailsState extends State<FillDetails> {
   final storageRef = FirebaseStorage.instance.ref();
   final email = FirebaseAuth.instance.currentUser?.email;
 
-  List<DropdownMenuEntry<dynamic>> dropdownMenuEntries = [
+  List<DropdownMenuEntry<dynamic>> itemDropdownMenuEntries = [
     const DropdownMenuEntry(value: 1, label: "plastic"),
     const DropdownMenuEntry(value: 2, label: "glass"),
     const DropdownMenuEntry(value: 3, label: "fabric"),
@@ -29,10 +29,27 @@ class _FillDetailsState extends State<FillDetails> {
     const DropdownMenuEntry(value: 1, label: "wood")
   ];
 
+  List<DropdownMenuEntry<dynamic>> cityEntries = [
+    const DropdownMenuEntry(value: 1, label: "Bangalore"),
+    const DropdownMenuEntry(value: 2, label: "Chennai"),
+    const DropdownMenuEntry(value: 3, label: "Delhi"),
+    const DropdownMenuEntry(value: 4, label: "Hyderabad"),
+    const DropdownMenuEntry(value: 1, label: "Kolkata")
+  ];
+
+  List<DropdownMenuEntry<dynamic>> stateEntries = [
+    const DropdownMenuEntry(value: 1, label: "Telangana"),
+    const DropdownMenuEntry(value: 2, label: "Tamil Nade"),
+    const DropdownMenuEntry(value: 3, label: "Delhi (UT)"),
+    const DropdownMenuEntry(value: 4, label: "Karnataka"),
+    const DropdownMenuEntry(value: 1, label: "West Bengal"),
+  ];
+
   late final TextEditingController _title;
   late final TextEditingController _desc;
   late final TextEditingController _cat;
-  late final TextEditingController _adr;
+  late final TextEditingController _city;
+  late final TextEditingController _state;
   late final TextEditingController _price;
 
   @override
@@ -40,7 +57,8 @@ class _FillDetailsState extends State<FillDetails> {
     _title = TextEditingController();
     _desc = TextEditingController();
     _cat = TextEditingController();
-    _adr = TextEditingController();
+    _city = TextEditingController();
+    _state = TextEditingController();
     _price = TextEditingController();
 
     super.initState();
@@ -51,7 +69,8 @@ class _FillDetailsState extends State<FillDetails> {
     _title.dispose();
     _desc.dispose();
     _cat.dispose();
-    _adr.dispose();
+    _city.dispose();
+    _state.dispose();
     _price.dispose();
     super.dispose();
   }
@@ -83,8 +102,8 @@ class _FillDetailsState extends State<FillDetails> {
     final title = _title.text.trim();
     final description = _desc.text.trim();
     final category = _cat.text.trim();
-    final faddress = _adr.text.trim();
-    final address = faddress.split(',');
+    final state = _state.text.trim();
+    final city = _city.text.trim();
     final double price = double.parse(_price.text.trim());
     final dynamic imgId = await _pickImageFromGallery();
 
@@ -111,7 +130,8 @@ class _FillDetailsState extends State<FillDetails> {
         title: title,
         desc: description,
         cat: category,
-        adr: address,
+        city: city,
+        state: state,
         price: price);
     await _db.collection('waste').add(obj.toJson());
   }
@@ -154,16 +174,22 @@ class _FillDetailsState extends State<FillDetails> {
           DropdownMenu<dynamic>(
               controller: _cat,
               hintText: "type",
-              initialSelection: dropdownMenuEntries.first,
-              dropdownMenuEntries: dropdownMenuEntries),
-          TextField(
-            controller: _adr,
-            decoration: const InputDecoration(hintText: "Enter location"),
-          ),
+              initialSelection: itemDropdownMenuEntries.first,
+              dropdownMenuEntries: itemDropdownMenuEntries),
           TextField(
             controller: _price,
             decoration: const InputDecoration(hintText: "Enter price"),
           ),
+          DropdownMenu<dynamic>(
+              controller: _city,
+              hintText: "city",
+              initialSelection: cityEntries.first,
+              dropdownMenuEntries: cityEntries),
+          DropdownMenu<dynamic>(
+              controller: _state,
+              hintText: "state",
+              initialSelection: stateEntries.first,
+              dropdownMenuEntries: stateEntries),
           ElevatedButton(
             onPressed: () {
               submitDetails();

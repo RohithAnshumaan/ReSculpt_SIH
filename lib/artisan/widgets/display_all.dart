@@ -33,7 +33,7 @@ class _DisplayAllState extends State<DisplayAll> {
     String city = await _requestLocationPermission();
     _itemsStream = FirebaseFirestore.instance
         .collection("waste")
-        .where('Address', arrayContains: city.toLowerCase())
+        .where('City', isEqualTo: city)
         .snapshots();
   }
 
@@ -143,7 +143,8 @@ class _DisplayAllState extends State<DisplayAll> {
             final title = item['Title'];
             final desc = item['Description'];
             final cat = item['Category'];
-            final ad = item['Address'];
+            final city = item['City'];
+            final state = item['State'];
             final price = item['Price'];
             return FutureBuilder(
                 future: getImageUrl(id),
@@ -194,7 +195,8 @@ class _DisplayAllState extends State<DisplayAll> {
                                             Text(title),
                                             Text(desc),
                                             Text(cat),
-                                            Text(ad.toString()),
+                                            Text(city),
+                                            Text(state),
                                             Text(price.toString()),
                                           ],
                                         ),

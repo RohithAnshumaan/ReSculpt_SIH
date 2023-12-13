@@ -2,7 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:resculpt/models/waste_object.dart';
+import 'package:resculpt/models/prod_object.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
@@ -29,10 +29,27 @@ class _ProdDetailsState extends State<ProdDetails> {
     const DropdownMenuEntry(value: 1, label: "wood")
   ];
 
+  List<DropdownMenuEntry<dynamic>> cityEntries = [
+    const DropdownMenuEntry(value: 1, label: "Bangalore"),
+    const DropdownMenuEntry(value: 2, label: "Chennai"),
+    const DropdownMenuEntry(value: 3, label: "Delhi"),
+    const DropdownMenuEntry(value: 4, label: "Hyderabad"),
+    const DropdownMenuEntry(value: 1, label: "Kolkata")
+  ];
+
+  List<DropdownMenuEntry<dynamic>> stateEntries = [
+    const DropdownMenuEntry(value: 1, label: "Telangana"),
+    const DropdownMenuEntry(value: 2, label: "Tamil Nade"),
+    const DropdownMenuEntry(value: 3, label: "Delhi (UT)"),
+    const DropdownMenuEntry(value: 4, label: "Karnataka"),
+    const DropdownMenuEntry(value: 1, label: "West Bengal"),
+  ];
+
   late final TextEditingController _title;
   late final TextEditingController _desc;
   late final TextEditingController _cat;
-  late final TextEditingController _adr;
+  late final TextEditingController _city;
+  late final TextEditingController _state;
   late final TextEditingController _price;
 
   @override
@@ -40,7 +57,8 @@ class _ProdDetailsState extends State<ProdDetails> {
     _title = TextEditingController();
     _desc = TextEditingController();
     _cat = TextEditingController();
-    _adr = TextEditingController();
+    _city = TextEditingController();
+    _state = TextEditingController();
     _price = TextEditingController();
 
     super.initState();
@@ -51,7 +69,8 @@ class _ProdDetailsState extends State<ProdDetails> {
     _title.dispose();
     _desc.dispose();
     _cat.dispose();
-    _adr.dispose();
+    _city.dispose();
+    _state.dispose();
     _price.dispose();
     super.dispose();
   }
@@ -83,8 +102,8 @@ class _ProdDetailsState extends State<ProdDetails> {
     final title = _title.text.trim();
     final description = _desc.text.trim();
     final category = _cat.text.trim();
-    final ad = _adr.text.trim();
-    final address = ad.split(',');
+    final state = _state.text.trim();
+    final city = _city.text.trim();
     final double price = double.parse(_price.text.trim());
     final dynamic imgId = await _pickImageFromGallery();
 
@@ -105,13 +124,14 @@ class _ProdDetailsState extends State<ProdDetails> {
         ],
       );
     }
-    WasteObject obj = WasteObject(
+    ProductObject obj = ProductObject(
         imgId: imgId,
         email: email,
         title: title,
         desc: description,
         cat: category,
-        adr: address,
+        city: city,
+        state: state,
         price: price);
     await _db.collection('innovations').add(obj.toJson());
   }
@@ -157,13 +177,19 @@ class _ProdDetailsState extends State<ProdDetails> {
               initialSelection: dropdownMenuEntries.first,
               dropdownMenuEntries: dropdownMenuEntries),
           TextField(
-            controller: _adr,
-            decoration: const InputDecoration(hintText: "Enter location"),
-          ),
-          TextField(
             controller: _price,
             decoration: const InputDecoration(hintText: "Enter price"),
           ),
+          DropdownMenu<dynamic>(
+              controller: _city,
+              hintText: "city",
+              initialSelection: cityEntries.first,
+              dropdownMenuEntries: cityEntries),
+          DropdownMenu<dynamic>(
+              controller: _state,
+              hintText: "state",
+              initialSelection: stateEntries.first,
+              dropdownMenuEntries: stateEntries),
           ElevatedButton(
             onPressed: () {
               submitDetails();

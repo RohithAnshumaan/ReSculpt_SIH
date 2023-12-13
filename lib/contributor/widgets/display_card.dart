@@ -57,7 +57,8 @@ class _DisplayCardState extends State<DisplayCard> {
             final title = item['Title'];
             final desc = item['Description'];
             final cat = item['Category'];
-            final ad = item['Address'];
+            final city = item['City'];
+            final state = item['State'];
             final price = item['Price'];
             return FutureBuilder(
                 future: getImageUrl(id),
@@ -108,7 +109,8 @@ class _DisplayCardState extends State<DisplayCard> {
                                             Text(title),
                                             Text(desc),
                                             Text(cat),
-                                            Text(ad.toString()),
+                                            Text(city),
+                                            Text(state),
                                             Text(price.toString()),
                                           ],
                                         ),

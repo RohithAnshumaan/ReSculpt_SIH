@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class WasteObject {
-  WasteObject(
+class ProductObject {
+  ProductObject(
       {this.id,
       this.imgId,
       required this.email,
@@ -35,9 +35,10 @@ class WasteObject {
     };
   }
 
-  factory WasteObject.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory ProductObject.fromSnapshot(
+      DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
-    return WasteObject(
+    return ProductObject(
         id: doc.id,
         email: data['Email'],
         title: data['Title'],
