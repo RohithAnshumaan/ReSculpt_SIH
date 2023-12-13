@@ -31,8 +31,8 @@ class _DisplayCardState extends State<DisplayCard> {
 
   Future<String> getImageUrl(dynamic id) async {
     final waste = storage.child('waste');
-    final mail = waste.child('$userEmail');
-    final imgRef = mail.child('$id.png');
+    // final mail = waste.child('$userEmail');
+    final imgRef = waste.child('$id.png');
     final networkImgUrl = await imgRef.getDownloadURL();
     return networkImgUrl;
   }

@@ -89,38 +89,39 @@ class _DisplayAllState extends State<DisplayAll> {
     return _city;
   }
 
-  // Future<String> getImageUrl(dynamic id) async {
-  //   final waste = storage.child('waste');
-  //   final imgRef = waste.child('$id.png');
-  //   final networkImgUrl = await imgRef.getDownloadURL();
-  //   return networkImgUrl;
-  // }
-
   Future<String> getImageUrl(dynamic id) async {
-    Reference wastesRef = storage.child('waste');
     try {
-      ListResult result = await wastesRef.listAll();
-
-      for (Reference userRef in result.prefixes) {
-        ListResult userItems = await userRef.listAll();
-
-        for (Reference imageRef in userItems.items) {
-          String imageName = imageRef.name
-              .split('.')
-              .first; // Get image name without extension
-
-          if (imageName == id) {
-            String downloadURL = await imageRef.getDownloadURL();
-            return downloadURL;
-          }
-        }
-      }
-      return '';
+      Reference imageRef = storage.child('waste/$id.png');
+      String downloadURL = await imageRef.getDownloadURL();
+      return downloadURL;
     } catch (e) {
-      // print('Error retrieving images: $e');
       return '';
     }
   }
+
+  // Future<String> getImageUrl(dynamic id) async {
+  //   Reference wastesRef = storage.child('waste');
+  //   try {
+  //     ListResult result = await wastesRef.listAll();
+
+  //     for (Reference userRef in result.prefixes) {
+  //       ListResult userItems = await userRef.listAll();
+
+  //       for (Reference imageRef in userItems.items) {
+  //         String imageName = imageRef.name.split('.').first;
+
+  //         if (imageName == id) {
+  //           String downloadURL = await imageRef.getDownloadURL();
+  //           return downloadURL;
+  //         }
+  //       }
+  //     }
+  //     return '';
+  //   } catch (e) {
+  //     // print('Error retrieving images: $e');
+  //     return '';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

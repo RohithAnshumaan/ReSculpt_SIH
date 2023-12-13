@@ -139,8 +139,8 @@ class _FillDetailsState extends State<FillDetails> {
   Future _storeImageToDb(File selectedImage) async {
     final randId = randomIdGenerator();
     final wasteRef = storageRef.child("waste");
-    final itemRef = wasteRef.child("$email");
-    final imageRef = itemRef.child("$randId.png");
+    // final itemRef = wasteRef.child("$email");
+    final imageRef = wasteRef.child("$randId.png");
     await imageRef.putFile(_selectedImage);
     return randId;
   }

@@ -138,9 +138,9 @@ class _ProdDetailsState extends State<ProdDetails> {
 
   Future _storeImageToDb(File selectedImage) async {
     final randId = randomIdGenerator();
-    final wasteRef = storageRef.child("products");
-    final itemRef = wasteRef.child("$email");
-    final imageRef = itemRef.child("$randId.png");
+    final prodRef = storageRef.child("products");
+    // final itemRef = wasteRef.child("$email");
+    final imageRef = prodRef.child("$randId.png");
     await imageRef.putFile(_selectedImage);
     return randId;
   }
