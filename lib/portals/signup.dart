@@ -29,14 +29,24 @@ class _SignupState extends State<Signup> {
     super.dispose();
   }
 
-  Future addUserDetails(
-    String username,
-    String email,
-  ) async {
-    await FirebaseFirestore.instance.collection('users').add({
-      "uname": username,
-      "email": email,
-    });
+  Future<void> addUserDetails(String username, String email) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          "uname": username,
+          "email": email,
+          "uid": user.uid,
+        });
+      } else {
+        // Handle the case where user is null (not signed in)
+        print("User is not signed in");
+      }
+    } catch (e) {
+      print("Error adding user details: $e");
+      // Handle the error as needed
+    }
   }
 
   void registerUser() async {
@@ -73,10 +83,10 @@ class _SignupState extends State<Signup> {
       } on FirebaseAuthException catch (e) {
         showAlertDialog(context, "Invalid Input", e.code);
       } catch (e) {
-        print("something bad happened");
-        print(
-            e.runtimeType); //this will give the type of exception that occured
-        print(e);
+        // print("something bad happened");
+        // print(
+        //     e.runtimeType); //this will give the type of exception that occured
+        // print(e);
       } finally {
         setState(() {
           _isLoading = false;
