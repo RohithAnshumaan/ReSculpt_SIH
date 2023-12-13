@@ -83,7 +83,8 @@ class _FillDetailsState extends State<FillDetails> {
     final title = _title.text.trim();
     final description = _desc.text.trim();
     final category = _cat.text.trim();
-    final address = _adr.text.trim();
+    final faddress = _adr.text.trim();
+    final address = faddress.split(',');
     final double price = double.parse(_price.text.trim());
     final dynamic imgId = await _pickImageFromGallery();
 

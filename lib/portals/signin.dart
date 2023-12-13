@@ -25,7 +25,6 @@ class _SigninState extends State<Signin> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('userType', userType);
   }
-
   bool _isLoading = false;
 
   @override
@@ -35,7 +34,11 @@ class _SigninState extends State<Signin> {
     super.dispose();
   }
 
+
   void signinContributor() async {
+
+  void signinCont() async {
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -54,6 +57,7 @@ class _SigninState extends State<Signin> {
             builder: (context) => const ContributorHome(),
           ),
         );
+        Navigator.of(context).pushReplacementNamed('/conhome');
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {
@@ -76,7 +80,9 @@ class _SigninState extends State<Signin> {
     }
   }
 
+
   void signinArtisan() async {
+  void signinArt() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -95,6 +101,7 @@ class _SigninState extends State<Signin> {
             builder: (context) => const ArtisanHome(),
           ),
         );
+        Navigator.of(context).pushReplacementNamed('/arthome');
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {
@@ -175,6 +182,7 @@ class _SigninState extends State<Signin> {
                         builder: (context) => const ForgotPassword(),
                       ),
                     );
+                    Navigator.of(context).pushNamed('/forgotpassword');
                   },
                   child: const Text("Forgot password"),
                 ),
@@ -186,6 +194,11 @@ class _SigninState extends State<Signin> {
             ),
             ElevatedButton(
               onPressed: _isLoading ? null : signinArtisan,
+              onPressed: _isLoading ? null : signinCont,
+              child: const Text("Signin to Contribute"),
+            ),
+            ElevatedButton(
+              onPressed: _isLoading ? null : signinArt,
               child: const Text("Signin as Artisan"),
             ),
             TextButton(
@@ -198,6 +211,7 @@ class _SigninState extends State<Signin> {
                   ),
                 );
                 ;
+                Navigator.of(context).pushNamed('/');
               },
               child: const Text("Don't have an account?"),
             ),

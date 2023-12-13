@@ -17,7 +17,7 @@ class WasteObject {
   final String title;
   final String desc;
   final String cat;
-  final String adr;
+  final List<String> adr;
   final double price;
 
   toJson() {

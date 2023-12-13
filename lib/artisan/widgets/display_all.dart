@@ -2,6 +2,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class DisplayAll extends StatefulWidget {
   const DisplayAll({super.key});
@@ -12,6 +14,11 @@ class DisplayAll extends StatefulWidget {
 
 class _DisplayAllState extends State<DisplayAll> {
   String? userEmail = FirebaseAuth.instance.currentUser?.email;
+  // String _area = "";
+  String _city = "";
+  // String _locality = "";
+  // String _state = "";
+  // String _postalCode = "";
   final storage = FirebaseStorage.instance.ref();
   late Stream<QuerySnapshot<Map<String, dynamic>>> _itemsStream =
       const Stream.empty();
@@ -22,8 +29,64 @@ class _DisplayAllState extends State<DisplayAll> {
     _initializeEventsStream();
   }
 
-  void _initializeEventsStream() {
-    _itemsStream = FirebaseFirestore.instance.collection("waste").snapshots();
+  void _initializeEventsStream() async {
+    String city = await _requestLocationPermission();
+    _itemsStream = FirebaseFirestore.instance
+        .collection("waste")
+        .where('Address', arrayContains: city.toLowerCase())
+        .snapshots();
+  }
+
+  Future<String> _requestLocationPermission() async {
+    var status = await Geolocator.checkPermission();
+    if (status == LocationPermission.denied) {
+      await Geolocator.requestPermission();
+    }
+
+    String city = await _getCurrentLocation();
+    return city;
+  }
+
+  Future<String> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        setState(() {
+          // _area = placemark.subAdministrativeArea ?? "";
+          _city = placemark.locality ?? "";
+          // _locality = placemark.subLocality ?? "";
+          // _state = placemark.administrativeArea ?? "";
+          // _postalCode = placemark.postalCode ?? "";
+        });
+      } else {
+        setState(() {
+          // _area = "Not available";
+          _city = "Not available";
+          // _locality = "Not available";
+          // _state = "Not available";
+          // _postalCode = "Not available";
+        });
+      }
+    } catch (e) {
+      //print("Error: $e");
+      setState(() {
+        // _area = "Error getting location";
+        _city = "Error getting location";
+        // _locality = "Error getting location";
+        // _state = "Error getting location";
+        // _postalCode = "Error getting location";
+      });
+    }
+    return _city;
   }
 
   // Future<String> getImageUrl(dynamic id) async {
@@ -131,7 +194,7 @@ class _DisplayAllState extends State<DisplayAll> {
                                             Text(title),
                                             Text(desc),
                                             Text(cat),
-                                            Text(ad),
+                                            Text(ad.toString()),
                                             Text(price.toString()),
                                           ],
                                         ),
