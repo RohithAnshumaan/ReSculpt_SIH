@@ -34,7 +34,7 @@ class _SigninState extends State<Signin> {
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
-        Navigator.of(context).pushReplacementNamed('/loc');
+        Navigator.of(context).pushReplacementNamed('/conhome');
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {

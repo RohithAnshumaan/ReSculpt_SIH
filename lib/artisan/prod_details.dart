@@ -83,7 +83,8 @@ class _ProdDetailsState extends State<ProdDetails> {
     final title = _title.text.trim();
     final description = _desc.text.trim();
     final category = _cat.text.trim();
-    final address = _adr.text.trim();
+    final ad = _adr.text.trim();
+    final address = ad.split(',');
     final double price = double.parse(_price.text.trim());
     final dynamic imgId = await _pickImageFromGallery();
 

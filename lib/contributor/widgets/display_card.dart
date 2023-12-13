@@ -108,7 +108,7 @@ class _DisplayCardState extends State<DisplayCard> {
                                             Text(title),
                                             Text(desc),
                                             Text(cat),
-                                            Text(ad),
+                                            Text(ad.toString()),
                                             Text(price.toString()),
                                           ],
                                         ),

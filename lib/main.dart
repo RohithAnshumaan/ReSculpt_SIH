@@ -5,7 +5,7 @@ import 'package:resculpt/contributor/contributor_home.dart';
 import 'package:resculpt/firebase_options.dart';
 import 'package:resculpt/location/location.dart';
 import 'package:resculpt/portals/forgot_pass.dart';
-import 'package:resculpt/portals/login.dart';
+import 'package:resculpt/portals/signin.dart';
 import 'package:resculpt/portals/signup.dart';
 import 'package:resculpt/portals/verify_email.dart';
 
