@@ -1,11 +1,30 @@
 // ignore_for_file: use_build_context_synchronously
 
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:resculpt/artisan/artisan_home.dart';
+// import 'package:resculpt/artisan/artisan_home1.dart';
+// import 'package:resculpt/contributor/contributor_home.dart';
+// import 'package:resculpt/contributor/contributor_home1.dart';
+// import 'package:resculpt/portals/forgot_pass.dart';
+// import 'package:resculpt/portals/signup.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// class Signin extends StatefulWidget {
+//   const Signin({super.key});
+
+//   @override
+//   State<Signin> createState() => _SigninState();
+// }
+
+// class _SigninState extends State<Signin> {
+
+// }
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:resculpt/artisan/artisan_home.dart';
-import 'package:resculpt/artisan/artisan_home1.dart';
 import 'package:resculpt/contributor/contributor_home.dart';
-import 'package:resculpt/contributor/contributor_home1.dart';
 import 'package:resculpt/portals/forgot_pass.dart';
 import 'package:resculpt/portals/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +44,7 @@ class _SigninState extends State<Signin> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('userType', userType);
   }
+
   bool _isLoading = false;
 
   @override
@@ -34,11 +54,30 @@ class _SigninState extends State<Signin> {
     super.dispose();
   }
 
+  void showAlertDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void signinContributor() async {
-
-  void signinCont() async {
-
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -50,14 +89,12 @@ class _SigninState extends State<Signin> {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password);
         await storeUserType('contributor');
-        Navigator.of(context).pop();
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const ContributorHome(),
           ),
         );
-        Navigator.of(context).pushReplacementNamed('/conhome');
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {
@@ -80,9 +117,7 @@ class _SigninState extends State<Signin> {
     }
   }
 
-
   void signinArtisan() async {
-  void signinArt() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     if (email.isNotEmpty && password.isNotEmpty) {
@@ -122,29 +157,6 @@ class _SigninState extends State<Signin> {
     } else if (password.isEmpty) {
       showAlertDialog(context, "Invalid Input", "please enter password");
     }
-  }
-
-  void showAlertDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              child: const Text(
-                'OK',
-                style: TextStyle(color: Colors.deepPurple),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -194,12 +206,7 @@ class _SigninState extends State<Signin> {
             ),
             ElevatedButton(
               onPressed: _isLoading ? null : signinArtisan,
-              onPressed: _isLoading ? null : signinCont,
-              child: const Text("Signin to Contribute"),
-            ),
-            ElevatedButton(
-              onPressed: _isLoading ? null : signinArt,
-              child: const Text("Signin as Artisan"),
+              child: const Text("Signin to Artisan"),
             ),
             TextButton(
               onPressed: () {
