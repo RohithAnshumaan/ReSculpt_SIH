@@ -76,7 +76,7 @@ class _DisplayAllState extends State<DisplayAll> {
           itemBuilder: ((context, index) {
             final item = itemsData[index].data();
             final id = item['ImgId'];
-            print('id:$id');
+            // print('id:$id');
             final title = item['Title'];
             final desc = item['Description'];
             final cat = item['Category'];
