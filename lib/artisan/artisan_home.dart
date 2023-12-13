@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:resculpt/artisan/widgets/chat_art.dart';
 import 'package:resculpt/artisan/prod_details.dart';
-import 'package:resculpt/artisan/widgets/display_all.dart';
+// import 'package:resculpt/artisan/widgets/display_all.dart';
 import 'package:resculpt/portals/my_account.dart';
 
 class ArtisanHome extends StatefulWidget {
@@ -20,7 +21,7 @@ class _ArtisanHomeState extends State<ArtisanHome> {
       ),
       body: Column(
         children: [
-          const DisplayAll(),
+          const Display(),
           Center(
             child: ElevatedButton(
                 onPressed: () {

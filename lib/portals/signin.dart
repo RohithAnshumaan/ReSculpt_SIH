@@ -136,7 +136,6 @@ class _SigninState extends State<Signin> {
             builder: (context) => const ArtisanHome(),
           ),
         );
-        Navigator.of(context).pushReplacementNamed('/arthome');
         _emailController.clear();
         _passwordController.clear();
       } on FirebaseAuthException catch (e) {
