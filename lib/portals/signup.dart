@@ -2,7 +2,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:resculpt/portals/constants.dart';
 import 'package:resculpt/portals/signin.dart';
 import 'package:resculpt/portals/verify_email.dart';
 
@@ -135,61 +137,189 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Signup page"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: "username",
-              ),
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: "email",
-              ),
-            ),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "password",
-              ),
-            ),
-            TextField(
-              controller: _cpasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "confirm password",
-              ),
-            ),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _isLoading ? null : registerUser,
-                    child: const Text("Signup"),
-                  ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Signin(),
-                  ),
-                );
-              },
-              child: const Text("Already have an account?"),
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Username",
+          style: TextStyle(
+            color: Colors.black54,
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.only(top: 7, bottom: 14),
+          child: TextFormField(
+            controller: _usernameController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Field cannot be empty";
+              }
+              return null;
+            },
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              prefixIcon: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.person,
+                  color: primaryColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: primaryColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              hintText: 'Enter your name',
+            ),
+          ),
+        ),
+        const Text(
+          "Email",
+          style: TextStyle(
+            color: Colors.black54,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 7, bottom: 14),
+          child: TextFormField(
+            controller: _emailController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Field cannot be empty";
+              }
+              return null;
+            },
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              prefixIcon: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.mail,
+                  color: primaryColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: primaryColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              hintText: 'Enter your email',
+            ),
+          ),
+        ),
+        const Text(
+          "Password",
+          style: TextStyle(
+            color: Colors.black54,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 7, bottom: 14),
+          child: TextFormField(
+            controller: _passwordController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Field cannot be empty";
+              }
+              return null;
+            },
+            obscureText: true,
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              prefixIcon: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.lock,
+                  color: primaryColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: primaryColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
+        const Text(
+          "Confirm Password",
+          style: TextStyle(
+            color: Colors.black54,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 7, bottom: 14),
+          child: TextFormField(
+            controller: _cpasswordController,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Field cannot be empty";
+              }
+              return null;
+            },
+            obscureText: true,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              prefixIcon: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.lock,
+                  color: primaryColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xFFFE0037)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: _isLoading
+              ? const CircularProgressIndicator()
+              : ElevatedButton.icon(
+                  onPressed: _isLoading ? null : registerUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(25),
+                        bottomRight: Radius.circular(25),
+                        bottomLeft: Radius.circular(25),
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(
+                    CupertinoIcons.arrow_right,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    "Sign Up",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }
