@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resculpt/all_chats.dart';
 import 'package:resculpt/artisan/widgets/chat_art.dart';
 import 'package:resculpt/artisan/prod_details.dart';
 // import 'package:resculpt/artisan/widgets/display_all.dart';
@@ -36,16 +37,32 @@ class _ArtisanHomeState extends State<ArtisanHome> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MyAccount(),
-            ),
-          );
-        },
-        child: const Text("account"),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AllChats(),
+                ),
+              );
+            },
+            child: const Text("chat"),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MyAccount(),
+                ),
+              );
+            },
+            child: const Text("account"),
+          ),
+        ],
       ),
     );
   }

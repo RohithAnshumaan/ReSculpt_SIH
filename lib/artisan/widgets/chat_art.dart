@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:resculpt/artisan/chat_page.dart';
 
 class Display extends StatefulWidget {
   const Display({super.key});
@@ -66,10 +67,14 @@ class _DisplayState extends State<Display> {
                             Text(price.toString()),
                             ElevatedButton(
                               onPressed: () {
-                                _navigateToChatRoom(
+                                Navigator.push(
                                   context,
-                                  email, // Use email as ownerId
-                                  title,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                        receiverEmail: email,
+                                        receiverUserId: FirebaseAuth
+                                            .instance.currentUser!.uid),
+                                  ),
                                 );
                               },
                               child: const Text('Chat'),
