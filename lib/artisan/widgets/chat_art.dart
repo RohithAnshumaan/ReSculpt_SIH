@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resculpt/artisan/chat_page.dart';
@@ -14,6 +15,55 @@ class _DisplayState extends State<Display> {
       const Stream.empty();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  //updating with whom the current user has chatted
+  Future<void> addChattedWith(String receiverEmail) async {
+    try {
+      String? currEmail = _auth.currentUser!.email;
+      QuerySnapshot userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: currEmail)
+          .get();
+      if (userQuery.docs.isNotEmpty) {
+        DocumentReference userRef = userQuery.docs.first.reference;
+        await userRef.update({
+          'chattedWith': FieldValue.arrayUnion([receiverEmail]),
+        });
+        print('ChattedWith updated successfully.');
+      } else {
+        print('User not found.');
+        // Handle the case where the user document is not found
+      }
+    } catch (error) {
+      print('Error updating chattedWith: $error');
+      // Handle the error as needed
+    }
+  }
+
+  //updating the chattedWith array in receivers document
+  Future<void> addChattedWithInReceiver(String receiverEmail) async {
+    try {
+      String? currEmail = _auth.currentUser!.email;
+      QuerySnapshot userQuery = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: receiverEmail)
+          .get();
+      if (userQuery.docs.isNotEmpty) {
+        DocumentReference userRef = userQuery.docs.first.reference;
+        await userRef.update({
+          'chattedWith': FieldValue.arrayUnion([currEmail]),
+        });
+        print('ChattedWith updated successfully.');
+      } else {
+        print('User not found.');
+        // Handle the case where the user document is not found
+      }
+    } catch (error) {
+      print('Error updating chattedWith: $error');
+      // Handle the error as needed
+    }
+  }
 
   Future<String?> getReceiverId(String email) async {
     try {
@@ -90,6 +140,8 @@ class _DisplayState extends State<Display> {
                                 String? id = await getReceiverId(email);
                                 print(email);
                                 print(id);
+                                addChattedWith(email);
+                                addChattedWithInReceiver(email);
                                 // Check if 'id' is not null before using it
                                 if (id != null) {
                                   Navigator.push(
