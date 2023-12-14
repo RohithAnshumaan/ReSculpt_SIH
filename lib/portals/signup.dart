@@ -32,12 +32,14 @@ class _SignupState extends State<Signup> {
   Future<void> addUserDetails(String username, String email) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
+      final List<String> chattedWith = [];
 
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           "uname": username,
           "email": email,
           "uid": user.uid,
+          "chattedWith": chattedWith,
         });
       } else {
         // Handle the case where user is null (not signed in)
