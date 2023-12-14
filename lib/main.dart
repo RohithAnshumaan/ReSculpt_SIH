@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:resculpt/artisan/artisan_home.dart';
 import 'package:resculpt/contributor/contributor_home.dart';
 import 'package:resculpt/firebase_options.dart';
+import 'package:resculpt/onboading_screen/onboarding_screen.dart';
 import 'package:resculpt/portals/loading.dart';
 import 'package:resculpt/portals/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
               } else {
                 return const MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  home: Signup(),
+                  home: OnboardingScreen(),
                 );
               }
             },

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:resculpt/all_chats.dart';
+import 'package:resculpt/artisan/widgets/display.dart';
 // import 'package:resculpt/all_chats.dart';
-import 'package:resculpt/artisan/widgets/display_all.dart';
+// import 'package:resculpt/artisan/widgets/display_all.dart';
 import 'package:resculpt/artisan/prod_details.dart';
 // import 'package:resculpt/artisan/widgets/display_all.dart';
 import 'package:resculpt/portals/my_account.dart';
@@ -22,9 +24,10 @@ class _ArtisanHomeState extends State<ArtisanHome> {
       ),
       body: Column(
         children: [
-          const DisplayAll(),
-          Center(
-            child: ElevatedButton(
+          const Display(),
+          Row(
+            children: [
+              ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -33,34 +36,31 @@ class _ArtisanHomeState extends State<ArtisanHome> {
                     ),
                   );
                 },
-                child: const Text('Upload')),
-          ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // FloatingActionButton(
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const AllChats(),
-          //       ),
-          //     );
-          //   },
-          //   child: const Text("chat"),
-          // ),
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MyAccount(),
-                ),
-              );
-            },
-            child: const Text("account"),
+                child: const Text('Upload'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AllChats(),
+                    ),
+                  );
+                },
+                child: const Text("chat"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyAccount(),
+                    ),
+                  );
+                },
+                child: const Text("account"),
+              ),
+            ],
           ),
         ],
       ),

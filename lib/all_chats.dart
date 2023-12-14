@@ -15,7 +15,7 @@ class _AllChatsState extends State<AllChats> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("all chats"),
+        title: const Text("all chats"),
       ),
       body: _buildUsersList(),
     );
@@ -30,7 +30,7 @@ class _AllChatsState extends State<AllChats> {
           return Text(snapshot.error.toString());
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return const Text("Loading");
         }
         return ListView(
           children: snapshot.data!.docs
@@ -47,7 +47,7 @@ class _AllChatsState extends State<AllChats> {
     //display all users except current user
     if (FirebaseAuth.instance.currentUser!.email != data['email']) {
       return ListTile(
-        title: data['email'],
+        title: Text(data['email']),
         onTap: () {
           Navigator.push(
             context,
