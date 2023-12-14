@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:resculpt/all_chats.dart';
-import 'package:resculpt/artisan/widgets/display.dart';
-// import 'package:resculpt/all_chats.dart';
-// import 'package:resculpt/artisan/widgets/display_all.dart';
 import 'package:resculpt/artisan/prod_details.dart';
+import 'package:resculpt/artisan/widgets/display.dart';
 // import 'package:resculpt/artisan/widgets/display_all.dart';
 import 'package:resculpt/portals/my_account.dart';
 

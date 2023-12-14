@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:resculpt/portals/constants.dart';
 import 'package:resculpt/portals/sign_in_dialog.dart';
-import 'package:resculpt/portals/signin.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});

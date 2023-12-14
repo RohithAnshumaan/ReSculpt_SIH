@@ -6,7 +6,6 @@ import 'package:resculpt/contributor/contributor_home.dart';
 import 'package:resculpt/firebase_options.dart';
 import 'package:resculpt/onboading_screen/onboarding_screen.dart';
 import 'package:resculpt/portals/loading.dart';
-import 'package:resculpt/portals/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {

@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:resculpt/portals/constants.dart';
-import 'package:resculpt/portals/signin.dart';
 import 'package:resculpt/portals/verify_email.dart';
 
 class Signup extends StatefulWidget {
