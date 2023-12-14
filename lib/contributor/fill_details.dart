@@ -39,7 +39,7 @@ class _FillDetailsState extends State<FillDetails> {
 
   List<DropdownMenuEntry<dynamic>> stateEntries = [
     const DropdownMenuEntry(value: 1, label: "Telangana"),
-    const DropdownMenuEntry(value: 2, label: "Tamil Nade"),
+    const DropdownMenuEntry(value: 2, label: "Tamil Nadu"),
     const DropdownMenuEntry(value: 3, label: "Delhi (UT)"),
     const DropdownMenuEntry(value: 4, label: "Karnataka"),
     const DropdownMenuEntry(value: 1, label: "West Bengal"),

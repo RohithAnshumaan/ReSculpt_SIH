@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:resculpt/all_chats.dart';
-import 'package:resculpt/artisan/prod_details.dart';
+import 'package:resculpt/contributor/fill_details.dart';
 import 'package:resculpt/contributor/widgets/get_data.dart';
 import 'package:resculpt/portals/my_account.dart';
 
@@ -50,6 +50,12 @@ class _ContributorHomeState extends State<ContributorHome> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +67,6 @@ class _ContributorHomeState extends State<ContributorHome> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              // hintText: 'search',
               suffixIcon: IconButton(
                 onPressed: () {
                   // Remove the following line to avoid duplicate calls
@@ -94,7 +99,6 @@ class _ContributorHomeState extends State<ContributorHome> {
               },
             ),
           ),
-          // const DisplayCard(),
           Row(
             children: [
               ElevatedButton(
@@ -102,7 +106,7 @@ class _ContributorHomeState extends State<ContributorHome> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ProdDetails(),
+                      builder: (context) => const FillDetails(),
                     ),
                   );
                 },

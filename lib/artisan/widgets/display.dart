@@ -2,6 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resculpt/artisan/chat_page.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Display extends StatefulWidget {
   const Display({super.key});
@@ -16,6 +19,9 @@ class _DisplayState extends State<Display> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final String? userEmail = FirebaseAuth.instance.currentUser?.email;
+  String _city = "";
+  final storage = FirebaseStorage.instance.ref();
 
   //updating with whom the current user has chatted
   Future<void> addChattedWith(String receiverEmail) async {
@@ -30,13 +36,13 @@ class _DisplayState extends State<Display> {
         await userRef.update({
           'chattedWith': FieldValue.arrayUnion([receiverEmail]),
         });
-        print('ChattedWith updated successfully.');
+        // print('ChattedWith updated successfully.');
       } else {
-        print('User not found.');
+        // print('User not found.');
         // Handle the case where the user document is not found
       }
     } catch (error) {
-      print('Error updating chattedWith: $error');
+      // print('Error updating chattedWith: $error');
       // Handle the error as needed
     }
   }
@@ -54,13 +60,13 @@ class _DisplayState extends State<Display> {
         await userRef.update({
           'chattedWith': FieldValue.arrayUnion([currEmail]),
         });
-        print('ChattedWith updated successfully.');
+        // print('ChattedWith updated successfully.');
       } else {
-        print('User not found.');
+        // print('User not found.');
         // Handle the case where the user document is not found
       }
     } catch (error) {
-      print('Error updating chattedWith: $error');
+      // print('Error updating chattedWith: $error');
       // Handle the error as needed
     }
   }
@@ -78,7 +84,7 @@ class _DisplayState extends State<Display> {
         return null;
       }
     } catch (e) {
-      print('Error getting receiver ID: $e');
+      // print('Error getting receiver ID: $e');
       return null;
     }
   }
@@ -89,8 +95,79 @@ class _DisplayState extends State<Display> {
     _initializeEventsStream();
   }
 
-  void _initializeEventsStream() {
-    _itemsStream = FirebaseFirestore.instance.collection("waste").snapshots();
+  void _initializeEventsStream() async {
+    String city = await _requestLocationPermission();
+    _itemsStream = FirebaseFirestore.instance
+        .collection("waste")
+        .where("City", isEqualTo: city)
+        .snapshots();
+  }
+
+  Future<String> _requestLocationPermission() async {
+    var status = await Geolocator.checkPermission();
+    if (status == LocationPermission.denied) {
+      await Geolocator.requestPermission();
+    }
+
+    String city = await _getCurrentLocation();
+    return city;
+  }
+
+  Future<String> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark placemark = placemarks[0];
+        setState(() {
+          // _area = placemark.subAdministrativeArea ?? "";
+          _city = placemark.locality ?? "";
+          // _locality = placemark.subLocality ?? "";
+          // _state = placemark.administrativeArea ?? "";
+          // _postalCode = placemark.postalCode ?? "";
+        });
+      } else {
+        setState(() {
+          // _area = "Not available";
+          _city = "Not available";
+          // _locality = "Not available";
+          // _state = "Not available";
+          // _postalCode = "Not available";
+        });
+      }
+    } catch (e) {
+      //print("Error: $e");
+      setState(() {
+        // _area = "Error getting location";
+        _city = "Error getting location";
+        // _locality = "Error getting location";
+        // _state = "Error getting location";
+        // _postalCode = "Error getting location";
+      });
+    }
+    return _city;
+  }
+
+  Future<String> getImageUrl(dynamic id) async {
+    try {
+      Reference imageRef = storage.child('waste/$id.png');
+      String downloadURL = await imageRef.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      return '';
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -109,70 +186,116 @@ class _DisplayState extends State<Display> {
             itemCount: itemsData.length,
             itemBuilder: ((context, index) {
               final item = itemsData[index].data();
+              final id = item['ImgId'];
               final email = item['Email'];
               final title = item['Title'];
               final desc = item['Description'];
               final cat = item['Category'];
-              final ad = item['Address'];
+              final city = item['City'];
+              final state = item['State'];
               final price = item['Price'];
-
-              return ListTile(
-                subtitle: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Card(
-                        elevation: 7,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(email),
-                            Text(title),
-                            Text(desc),
-                            Text(cat),
-                            Text(ad.toString()),
-                            Text(price.toString()),
-                            ElevatedButton(
-                              onPressed: () async {
-                                // Use 'await' to get the result of the asynchronous function
-                                String? id = await getReceiverId(email);
-                                print(email);
-                                print(id);
-                                addChattedWith(email);
-                                addChattedWithInReceiver(email);
-                                // Check if 'id' is not null before using it
-                                if (id != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChatPage(
-                                        receiverEmail: email,
-                                        receiverUserId: id,
-                                      ),
+              return FutureBuilder(
+                future: getImageUrl(id),
+                builder: (context, urlSnapshot) {
+                  if (urlSnapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (urlSnapshot.hasError) {
+                    // print('Error loading image: ${urlSnapshot.error}');
+                    return const Text('Error loading image');
+                  } else if (!urlSnapshot.hasData || urlSnapshot.data == null) {
+                    return const Text('No image available');
+                  } else {
+                    return ListTile(
+                        subtitle: Column(children: [
+                      Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Card(
+                            elevation: 7,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Image on the left
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    width: 100,
+                                    height: 100,
+                                    child: Image.network(
+                                      urlSnapshot
+                                          .data!, // Use the retrieved URL here
+                                      fit: BoxFit
+                                          .cover, // Adjust as per your UI requirement
                                     ),
-                                  );
-                                } else {
-                                  // Handle the case where no matching document is found
-                                  print(
-                                      'No matching document found for email: $email');
-                                }
-                              },
-                              child: Text('Go to Chat Page'),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Text(email),
+                                        Text(title),
+                                        Text(desc),
+                                        Text(cat),
+                                        Text(city),
+                                        Text(state),
+                                        Text(price.toString()),
+                                        Center(
+                                          child: Column(
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  // Use 'await' to get the result of the asynchronous function
+                                                  String? id =
+                                                      await getReceiverId(
+                                                          email);
+                                                  // print(email);
+                                                  // print(id);
+                                                  addChattedWith(email);
+                                                  addChattedWithInReceiver(
+                                                      email);
+                                                  // Check if 'id' is not null before using it
+                                                  if (id != null) {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ChatPage(
+                                                          receiverEmail: email,
+                                                          receiverUserId: id,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    // Handle the case where no matching document is found
+                                                    // print('No matching document found for email: $email');
+                                                  }
+                                                },
+                                                child: const Text(
+                                                    'Go to Chat Page'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  // Implement the buy functionality
+                                                },
+                                                child: const Text('Buy'),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Implement the buy functionality
-                              },
-                              child: const Text('Buy'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                          ))
+                    ]));
+                  }
+                },
               );
             }),
           );
