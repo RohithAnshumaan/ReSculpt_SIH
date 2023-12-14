@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:resculpt/artisan/chat_page.dart';
@@ -13,6 +12,26 @@ class Display extends StatefulWidget {
 class _DisplayState extends State<Display> {
   late Stream<QuerySnapshot<Map<String, dynamic>>> _itemsStream =
       const Stream.empty();
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<String?> getReceiverId(String email) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first['uid'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error getting receiver ID: $e');
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -66,18 +85,29 @@ class _DisplayState extends State<Display> {
                             Text(ad.toString()),
                             Text(price.toString()),
                             ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatPage(
+                              onPressed: () async {
+                                // Use 'await' to get the result of the asynchronous function
+                                String? id = await getReceiverId(email);
+                                print(email);
+                                print(id);
+                                // Check if 'id' is not null before using it
+                                if (id != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatPage(
                                         receiverEmail: email,
-                                        receiverUserId: FirebaseAuth
-                                            .instance.currentUser!.uid),
-                                  ),
-                                );
+                                        receiverUserId: id,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // Handle the case where no matching document is found
+                                  print(
+                                      'No matching document found for email: $email');
+                                }
                               },
-                              child: const Text('Chat'),
+                              child: Text('Go to Chat Page'),
                             ),
                             ElevatedButton(
                               onPressed: () {
