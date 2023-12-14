@@ -34,12 +34,14 @@ class _SignupState extends State<Signup> {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       final List<String> chattedWith = [];
+      final List<String> cartProdIds = [];
 
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           "uname": username,
           "email": email,
           "uid": user.uid,
+          "cartProdIds": cartProdIds,
           "chattedWith": chattedWith,
         });
       } else {
