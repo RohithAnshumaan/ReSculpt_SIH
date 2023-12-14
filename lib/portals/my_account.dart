@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:resculpt/onboading_screen/onboarding_screen.dart';
 import 'package:resculpt/portals/signin.dart';
 
 class MyAccount extends StatefulWidget {
@@ -25,7 +26,7 @@ class _MyAccountState extends State<MyAccount> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Signin(),
+                    builder: (context) => const OnboardingScreen(),
                   ),
                 );
               },

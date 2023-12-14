@@ -22,9 +22,11 @@
 // }
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:resculpt/artisan/artisan_home.dart';
 import 'package:resculpt/contributor/contributor_home.dart';
+import 'package:resculpt/portals/constants.dart';
 import 'package:resculpt/portals/forgot_pass.dart';
 import 'package:resculpt/portals/signup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -160,68 +162,160 @@ class _SigninState extends State<Signin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Signin page"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: "email",
-              ),
-            ),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "password",
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgotPassword(),
-                      ),
-                    );
-                  },
-                  child: const Text("Forgot password"),
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+                "Email",
+                style: TextStyle(
+                  color: Colors.black54,
                 ),
-              ],
+              ),
+              Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            child: TextFormField(
+              controller: _emailController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Field cannot be empty";
+                }
+                return null;
+              },
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                prefixIcon: const Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.mail,
+                    color:  primaryColor,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.black),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color:  primaryColor),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                hintText: 'Enter your email',
+              ),
             ),
-            ElevatedButton(
-              onPressed: _isLoading ? null : signinContributor,
-              child: const Text("Signin as Contributor"),
+          ),
+        const Text(
+                "Password",
+                style: TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+              Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: TextFormField(
+              controller: _passwordController,
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Field cannot be empty";
+                }
+                return null;
+              },
+              obscureText: true,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                prefixIcon: const Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.lock,
+                    color:  primaryColor,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.black),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color:  primaryColor),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
             ),
-            ElevatedButton(
-              onPressed: _isLoading ? null : signinArtisan,
-              child: const Text("Signin to Artisan"),
-            ),
+          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Signup(),
+                    builder: (context) => const ForgotPassword(),
                   ),
                 );
-                ;
-                Navigator.of(context).pushNamed('/');
               },
-              child: const Text("Don't have an account?"),
+              child: const Text("Forgot password", style: TextStyle(color: primaryColor),),
             ),
           ],
         ),
+          // ElevatedButton(
+          //   onPressed: _isLoading ? null : signinContributor,
+          //   child: const Text("Signin as Contributor"),
+          // ),
+          // ElevatedButton(
+          //   onPressed: _isLoading ? null : signinArtisan,
+          //   child: const Text("Signin to Artisan"),
+          // ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: ElevatedButton.icon(
+            onPressed: _isLoading ? null : signinContributor,
+            style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(25),
+                          bottomRight: Radius.circular(25),
+                          bottomLeft: Radius.circular(25),
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(
+                      CupertinoIcons.arrow_right,
+                      color: Colors.white,
+                    ),
+                    label: const Text("SignIn as Contributor", style: TextStyle(color: Colors.white),),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15),
+          child: ElevatedButton.icon(
+            onPressed: _isLoading ? null : signinArtisan,
+            style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(25),
+                          bottomRight: Radius.circular(25),
+                          bottomLeft: Radius.circular(25),
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(
+                      CupertinoIcons.arrow_right,
+                      color: Colors.white,
+                    ),
+                    label: const Text("SignIn to Artisan", style: TextStyle(color: Colors.white),),
+          ),
+        ),
+
+          
+        ],
       ),
     );
   }
