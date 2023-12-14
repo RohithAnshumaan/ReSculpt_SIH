@@ -40,17 +40,17 @@ class _ArtisanHomeState extends State<ArtisanHome> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AllChats(),
-                ),
-              );
-            },
-            child: const Text("chat"),
-          ),
+          // FloatingActionButton(
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const AllChats(),
+          //       ),
+          //     );
+          //   },
+          //   child: const Text("chat"),
+          // ),
           FloatingActionButton(
             onPressed: () {
               Navigator.push(
