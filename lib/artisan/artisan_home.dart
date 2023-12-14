@@ -23,8 +23,9 @@ class _ArtisanHomeState extends State<ArtisanHome> {
       body: Column(
         children: [
           const Display(),
-          Center(
-            child: ElevatedButton(
+          Row(
+            children: [
+              ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -33,34 +34,31 @@ class _ArtisanHomeState extends State<ArtisanHome> {
                     ),
                   );
                 },
-                child: const Text('Upload')),
-          ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // FloatingActionButton(
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const AllChats(),
-          //       ),
-          //     );
-          //   },
-          //   child: const Text("chat"),
-          // ),
-          FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MyAccount(),
-                ),
-              );
-            },
-            child: const Text("account"),
+                child: const Text('Upload'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AllChats(),
+                    ),
+                  );
+                },
+                child: const Text("chat"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyAccount(),
+                    ),
+                  );
+                },
+                child: const Text("account"),
+              ),
+            ],
           ),
         ],
       ),

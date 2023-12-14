@@ -215,7 +215,7 @@ class _SigninState extends State<Signin> {
                     builder: (context) => const Signup(),
                   ),
                 );
-                ;
+
                 Navigator.of(context).pushNamed('/');
               },
               child: const Text("Don't have an account?"),
