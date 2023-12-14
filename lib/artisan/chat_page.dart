@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:resculpt/chat_services.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage(
-      {super.key, required this.receiverEmail, required this.receiverUserId});
+  const ChatPage({
+    super.key,
+    required this.receiverEmail,
+    required this.receiverUserId,
+  });
 
   final String receiverEmail;
   final String receiverUserId;
@@ -19,7 +22,7 @@ class _ChatPageState extends State<ChatPage> {
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  void sendMessaage() async {
+  void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
           widget.receiverUserId, _messageController.text);
@@ -54,8 +57,9 @@ class _ChatPageState extends State<ChatPage> {
             return Text("Error : ${snapshot.error}");
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("loading");
+            return const Center(child: CircularProgressIndicator());
           }
+
           return ListView(
             children: snapshot.data!.docs
                 .map((document) => _buildMessageItem(document))
@@ -70,7 +74,7 @@ class _ChatPageState extends State<ChatPage> {
     //align the messages to the right if the sender is the current user, otherwise to the left
     var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
         ? Alignment.centerRight
-        : Alignment.centerRight;
+        : Alignment.centerLeft;
 
     return Container(
       alignment: alignment,
@@ -90,11 +94,11 @@ class _ChatPageState extends State<ChatPage> {
         Expanded(
           child: TextField(
             controller: _messageController,
-            decoration: InputDecoration(hintText: 'Enter Message'),
+            decoration: const InputDecoration(hintText: 'Enter Message'),
           ),
         ),
         IconButton(
-          onPressed: sendMessaage,
+          onPressed: sendMessage,
           icon: const Icon(Icons.send),
         )
       ],

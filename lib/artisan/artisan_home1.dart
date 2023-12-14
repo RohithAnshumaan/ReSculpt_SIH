@@ -25,19 +25,19 @@ class _ArtisanHome1State extends State<ArtisanHome1> {
       // Retrieve all documents
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('waste').get();
-      querySnapshot.docs.forEach((document) {
+      for (var document in querySnapshot.docs) {
         docIds.add(document.reference.id);
-      });
+      }
     } else {
       // Retrieve documents based on the search query
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('waste').get();
-      querySnapshot.docs.forEach((document) {
+      for (var document in querySnapshot.docs) {
         String title = document['Title'] ?? '';
         if (title.toLowerCase().contains(searchQuery.toLowerCase())) {
           docIds.add(document.reference.id);
         }
-      });
+      }
     }
   }
 

@@ -43,10 +43,10 @@ class _SignupState extends State<Signup> {
         });
       } else {
         // Handle the case where user is null (not signed in)
-        print("User is not signed in");
+        //print("User is not signed in");
       }
     } catch (e) {
-      print("Error adding user details: $e");
+      //print("Error adding user details: $e");
       // Handle the error as needed
     }
   }

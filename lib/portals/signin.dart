@@ -254,6 +254,7 @@ class _SigninState extends State<Signin> {
                     builder: (context) => const ForgotPassword(),
                   ),
                 );
+                Navigator.of(context).pushNamed('/');
               },
               child: const Text("Forgot password", style: TextStyle(color: primaryColor),),
             ),

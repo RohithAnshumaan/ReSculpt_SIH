@@ -31,9 +31,9 @@ class _ContributorHome1State extends State<ContributorHome1> {
               isEqualTo:
                   currentUserEmail) // Replace 'currentUserEmail' with the actual variable storing the user's email
           .get();
-      querySnapshot.docs.forEach((document) {
+      for (var document in querySnapshot.docs) {
         docIds.add(document.reference.id);
-      });
+      }
     } else {
       // Retrieve documents based on the search query and the current user's email
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -42,12 +42,12 @@ class _ContributorHome1State extends State<ContributorHome1> {
               isEqualTo:
                   currentUserEmail) // Replace 'currentUserEmail' with the actual variable storing the user's email
           .get();
-      querySnapshot.docs.forEach((document) {
+      for (var document in querySnapshot.docs) {
         String title = document['Title'] ?? '';
         if (title.toLowerCase().contains(searchQuery.toLowerCase())) {
           docIds.add(document.reference.id);
         }
-      });
+      }
     }
   }
 
