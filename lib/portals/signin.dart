@@ -24,8 +24,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:resculpt/artisan/artisan_home.dart';
-import 'package:resculpt/contributor/contributor_home.dart';
+import 'package:resculpt/artisan/screens/artisan_home_screen.dart';
+import 'package:resculpt/contributor/screens/contributor_home_screen.dart';
 import 'package:resculpt/portals/constants.dart';
 import 'package:resculpt/portals/forgot_pass.dart';
 import 'package:shared_preferences/shared_preferences.dart';

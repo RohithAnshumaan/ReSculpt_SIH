@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:resculpt/artisan/chat_page.dart';
+import 'package:resculpt/artisan/screens/chat_page_screen.dart';
 
 class AllChats extends StatefulWidget {
   const AllChats({super.key});

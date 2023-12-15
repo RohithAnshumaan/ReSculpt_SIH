@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:resculpt/all_chats.dart';
-import 'package:resculpt/contributor/fill_details.dart';
+import 'package:resculpt/chat/all_chats.dart';
+import 'package:resculpt/contributor/screens/fill_details_screen.dart';
 import 'package:resculpt/contributor/widgets/get_data.dart';
 import 'package:resculpt/portals/my_account.dart';
 
@@ -69,9 +69,6 @@ class _ContributorHomeState extends State<ContributorHome> {
             decoration: InputDecoration(
               suffixIcon: IconButton(
                 onPressed: () {
-                  // Remove the following line to avoid duplicate calls
-                  // getDocIds(_searchController.text);
-
                   setState(() {
                     // This will trigger the FutureBuilder to rebuild and call getDocIds
                   });

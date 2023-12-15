@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:resculpt/artisan/chat_page.dart';
+import 'package:resculpt/artisan/screens/chat_page_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -16,7 +16,6 @@ class Display extends StatefulWidget {
 class _DisplayState extends State<Display> {
   late Stream<QuerySnapshot<Map<String, dynamic>>> _itemsStream =
       const Stream.empty();
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String? userEmail = FirebaseAuth.instance.currentUser?.email;
@@ -176,7 +175,11 @@ class _DisplayState extends State<Display> {
       child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: _itemsStream,
         builder: ((context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: Text('Loading'),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
               child: Text('No items found'),
             );
@@ -275,13 +278,7 @@ class _DisplayState extends State<Display> {
                                                   }
                                                 },
                                                 child: const Text(
-                                                    'Go to Chat Page'),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  // Implement the buy functionality
-                                                },
-                                                child: const Text('Buy'),
+                                                    'Chat with owner'),
                                               ),
                                             ],
                                           ),

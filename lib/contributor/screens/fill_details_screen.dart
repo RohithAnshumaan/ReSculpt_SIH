@@ -2,26 +2,26 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:resculpt/models/prod_object.dart';
+import 'package:resculpt/contributor/models/waste_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
-import 'package:resculpt/randomkey.dart';
+import 'package:resculpt/UniqueID/randomkey.dart';
 
-class ProdDetails extends StatefulWidget {
-  const ProdDetails({super.key});
+class FillDetails extends StatefulWidget {
+  const FillDetails({super.key});
 
   @override
-  State<ProdDetails> createState() => _ProdDetailsState();
+  State<FillDetails> createState() => _FillDetailsState();
 }
 
-class _ProdDetailsState extends State<ProdDetails> {
+class _FillDetailsState extends State<FillDetails> {
   late File _selectedImage;
   final _db = FirebaseFirestore.instance;
   final storageRef = FirebaseStorage.instance.ref();
   final email = FirebaseAuth.instance.currentUser?.email;
 
-  List<DropdownMenuEntry<dynamic>> dropdownMenuEntries = [
+  List<DropdownMenuEntry<dynamic>> itemDropdownMenuEntries = [
     const DropdownMenuEntry(value: 1, label: "plastic"),
     const DropdownMenuEntry(value: 2, label: "glass"),
     const DropdownMenuEntry(value: 3, label: "fabric"),
@@ -39,7 +39,7 @@ class _ProdDetailsState extends State<ProdDetails> {
 
   List<DropdownMenuEntry<dynamic>> stateEntries = [
     const DropdownMenuEntry(value: 1, label: "Telangana"),
-    const DropdownMenuEntry(value: 2, label: "Tamil Nade"),
+    const DropdownMenuEntry(value: 2, label: "Tamil Nadu"),
     const DropdownMenuEntry(value: 3, label: "Delhi (UT)"),
     const DropdownMenuEntry(value: 4, label: "Karnataka"),
     const DropdownMenuEntry(value: 1, label: "West Bengal"),
@@ -124,7 +124,7 @@ class _ProdDetailsState extends State<ProdDetails> {
         ],
       );
     }
-    ProductObject obj = ProductObject(
+    WasteObject obj = WasteObject(
         imgId: imgId,
         email: email,
         title: title,
@@ -133,14 +133,14 @@ class _ProdDetailsState extends State<ProdDetails> {
         city: city,
         state: state,
         price: price);
-    await _db.collection('innovations').add(obj.toJson());
+    await _db.collection('waste').add(obj.toJson());
   }
 
   Future _storeImageToDb(File selectedImage) async {
     final randId = randomIdGenerator();
-    final prodRef = storageRef.child("products");
+    final wasteRef = storageRef.child("waste");
     // final itemRef = wasteRef.child("$email");
-    final imageRef = prodRef.child("$randId.png");
+    final imageRef = wasteRef.child("$randId.png");
     await imageRef.putFile(_selectedImage);
     return randId;
   }
@@ -174,8 +174,8 @@ class _ProdDetailsState extends State<ProdDetails> {
           DropdownMenu<dynamic>(
               controller: _cat,
               hintText: "type",
-              initialSelection: dropdownMenuEntries.first,
-              dropdownMenuEntries: dropdownMenuEntries),
+              initialSelection: itemDropdownMenuEntries.first,
+              dropdownMenuEntries: itemDropdownMenuEntries),
           TextField(
             controller: _price,
             decoration: const InputDecoration(hintText: "Enter price"),

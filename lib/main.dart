@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:resculpt/artisan/artisan_home.dart';
-import 'package:resculpt/contributor/contributor_home.dart';
+import 'package:resculpt/artisan/screens/artisan_home_screen.dart';
+import 'package:resculpt/contributor/screens/contributor_home_screen.dart';
 import 'package:resculpt/firebase_options.dart';
 import 'package:resculpt/onboading_screen/onboarding_screen.dart';
 import 'package:resculpt/portals/loading.dart';

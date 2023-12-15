@@ -27,9 +27,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: InkWell(
               onTap: () {
                 showCustomDialog(
-                                  context,
-                                  onValue: (_) {},
-                                );
+                  context,
+                  onValue: (_) {},
+                );
               }, //to login screen. We will update later
               child: const Text(
                 'Skip',
@@ -203,7 +203,6 @@ class createPage extends StatelessWidget {
                 color: Colors.grey,
               ),
             ),
-            
           ],
         ),
       ),
