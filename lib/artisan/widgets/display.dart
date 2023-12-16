@@ -1,26 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:resculpt/artisan/screens/chat_page_screen.dart';
+// import 'package:resculpt/artisan/screens/chat_page_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:resculpt/artisan/screens/chat_page_screen.dart';
 
 class Display extends StatefulWidget {
-  const Display({super.key});
-
+  const Display({super.key, required this.documentId});
+  final String documentId;
   @override
   State<Display> createState() => _DisplayState();
 }
 
 class _DisplayState extends State<Display> {
-  late Stream<QuerySnapshot<Map<String, dynamic>>> _itemsStream =
-      const Stream.empty();
+  // late Stream<QuerySnapshot<Map<String, dynamic>>> _itemsStream =
+  //     const Stream.empty();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String? userEmail = FirebaseAuth.instance.currentUser?.email;
-  String _city = "";
+  late String _city = "";
   final storage = FirebaseStorage.instance.ref();
+  final List<String> list = [];
+  CollectionReference dbData = FirebaseFirestore.instance.collection('waste');
 
   //updating with whom the current user has chatted
   Future<void> addChattedWith(String receiverEmail) async {
@@ -91,25 +94,36 @@ class _DisplayState extends State<Display> {
   @override
   void initState() {
     super.initState();
-    _initializeEventsStream();
+    _initializeCity();
+    // _initializeEventsStream();
   }
 
-  void _initializeEventsStream() async {
-    String city = await _requestLocationPermission();
-    _itemsStream = FirebaseFirestore.instance
-        .collection("waste")
-        .where("City", isEqualTo: city)
-        .snapshots();
-  }
+  // void _initializeEventsStream() async {
+  //   String city = await _requestLocationPermission();
+  //   _itemsStream = FirebaseFirestore.instance
+  //       .collection("waste")
+  //       .where("City", isEqualTo: city)
+  //       .snapshots();
+  // }
 
-  Future<String> _requestLocationPermission() async {
+  Future<void> _requestLocationPermission() async {
     var status = await Geolocator.checkPermission();
     if (status == LocationPermission.denied) {
       await Geolocator.requestPermission();
     }
 
-    String city = await _getCurrentLocation();
-    return city;
+    // String city = await _getCurrentLocation();
+    // setState(() {
+    //   _city = city;
+    // });
+  }
+
+  Future<void> _initializeCity() async {
+    await _requestLocationPermission(); // Request location permission
+    String city = await _getCurrentLocation(); // Get current location
+    setState(() {
+      _city = city; // Set the obtained city in state
+    });
   }
 
   Future<String> _getCurrentLocation() async {
@@ -171,275 +185,254 @@ class _DisplayState extends State<Display> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: _itemsStream,
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: Text('Loading'),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('No items found'),
-            );
+    return FutureBuilder<DocumentSnapshot>(
+      future: dbData.doc(widget.documentId).get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          String city = data['City'];
+          String imgId = data['ImgId'];
+          if (city != _city) {
+            list.add(widget.documentId);
           }
-          final itemsData = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: itemsData.length,
-            itemBuilder: ((context, index) {
-              final item = itemsData[index].data();
-              final id = item['ImgId'];
-              final email = item['Email'];
-              final title = item['Title'];
-              final desc = item['Description'];
-              final cat = item['Category'];
-              final city = item['City'];
-              final state = item['State'];
-              final price = item['Price'];
-              return FutureBuilder(
-                future: getImageUrl(id),
-                builder: (context, urlSnapshot) {
-                  if (urlSnapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (urlSnapshot.hasError) {
-                    // print('Error loading image: ${urlSnapshot.error}');
-                    return const Text('Error loading image');
-                  } else if (!urlSnapshot.hasData || urlSnapshot.data == null) {
-                    return const Text('No image available');
-                  } else {
-                    return ListTile(
-                        subtitle: Column(children: [
-                      Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Card(
-                            elevation: 7,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Image on the left
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Image.network(
-                                      urlSnapshot
-                                          .data!, // Use the retrieved URL here
-                                      fit: BoxFit
-                                          .cover, // Adjust as per your UI requirement
+          if (city == _city) {
+            return Column(
+              children: [
+                FutureBuilder(
+                    future: getImageUrl(imgId),
+                    builder: ((context, urlSnapshot) {
+                      if (urlSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (urlSnapshot.hasError) {
+                        // print('Error loading image: ${urlSnapshot.error}');
+                        return const Text('Error loading image');
+                      } else if (!urlSnapshot.hasData ||
+                          urlSnapshot.data == null) {
+                        return const Text('No image available');
+                      } else {
+                        return ListTile(
+                          subtitle: Column(
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Card(
+                                    elevation: 7,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(email),
-                                        Text(title),
-                                        Text(desc),
-                                        Text(cat),
-                                        Text(city),
-                                        Text(state),
-                                        Text(price.toString()),
-                                        Center(
-                                          child: Column(
-                                            children: [
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  // Use 'await' to get the result of the asynchronous function
-                                                  String? id =
-                                                      await getReceiverId(
-                                                          email);
-                                                  // print(email);
-                                                  // print(id);
-                                                  addChattedWith(email);
-                                                  addChattedWithInReceiver(
-                                                      email);
-                                                  // Check if 'id' is not null before using it
-                                                  if (id != null) {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ChatPage(
-                                                          receiverEmail: email,
-                                                          receiverUserId: id,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    // Handle the case where no matching document is found
-                                                    // print('No matching document found for email: $email');
-                                                  }
-                                                },
-                                                child: const Text(
-                                                    'Chat with owner'),
-                                              ),
-                                            ],
+                                        // Image on the left
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 100,
+                                            child: Image.network(
+                                              urlSnapshot
+                                                  .data!, // Use the retrieved URL here
+                                              fit: BoxFit
+                                                  .cover, // Adjust as per your UI requirement
+                                            ),
                                           ),
-                                        )
+                                        ),
+                                        // Text on the right
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(data['Title']),
+                                                Text(data['Description']),
+                                                Text(data['Category']),
+                                                Text(data['City']),
+                                                Text(data['State']),
+                                                Text(data['Price'].toString()),
+                                                Center(
+                                                  child: Column(
+                                                    children: [
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          // Use 'await' to get the result of the asynchronous function
+                                                          String? id =
+                                                              await getReceiverId(
+                                                                  data[
+                                                                      'Email']);
+                                                          // print(email);
+                                                          // print(id);
+                                                          addChattedWith(
+                                                              data['Email']);
+                                                          addChattedWithInReceiver(
+                                                              data['Email']);
+                                                          // Check if 'id' is not null before using it
+                                                          if (id != null) {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ChatPage(
+                                                                  receiverEmail:
+                                                                      data[
+                                                                          'Email'],
+                                                                  receiverUserId:
+                                                                      id,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            // Handle the case where no matching document is found
+                                                            // print('No matching document found for email: $email');
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                            'Chat with owner'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ))
-                    ]));
-                  }
-                },
-              );
-            }),
-          );
-        }),
-      ),
+                                  ))
+                            ],
+                          ),
+                        );
+                      }
+                    })),
+              ],
+            );
+          }
+          // return ListView.builder(
+          //   itemCount: list.length,
+          //   itemBuilder: (context, index) {
+          //     return FutureBuilder(
+          //         future: getImageUrl(imgId),
+          //         builder: ((context, urlSnapshot) {
+          //           if (urlSnapshot.connectionState ==
+          //               ConnectionState.waiting) {
+          //             return const CircularProgressIndicator();
+          //           } else if (urlSnapshot.hasError) {
+          //             // print('Error loading image: ${urlSnapshot.error}');
+          //             return const Text('Error loading image');
+          //           } else if (!urlSnapshot.hasData ||
+          //               urlSnapshot.data == null) {
+          //             return const Text('No image available');
+          //           } else {
+          //             return ListTile(
+          //               subtitle: Column(
+          //                 children: [
+          //                   const Text('Items you may like'),
+          //                   Padding(
+          //                       padding: const EdgeInsets.all(20.0),
+          //                       child: Card(
+          //                         elevation: 7,
+          //                         shape: RoundedRectangleBorder(
+          //                           borderRadius: BorderRadius.circular(20),
+          //                         ),
+          //                         child: Row(
+          //                           crossAxisAlignment:
+          //                               CrossAxisAlignment.start,
+          //                           children: [
+          //                             // Image on the left
+          //                             Padding(
+          //                               padding: const EdgeInsets.all(8.0),
+          //                               child: SizedBox(
+          //                                 width: 100,
+          //                                 height: 100,
+          //                                 child: Image.network(
+          //                                   urlSnapshot
+          //                                       .data!, // Use the retrieved URL here
+          //                                   fit: BoxFit
+          //                                       .cover, // Adjust as per your UI requirement
+          //                                 ),
+          //                               ),
+          //                             ),
+          //                             // Text on the right
+          //                             Expanded(
+          //                               child: Padding(
+          //                                 padding: const EdgeInsets.all(8.0),
+          //                                 child: Column(
+          //                                   crossAxisAlignment:
+          //                                       CrossAxisAlignment.start,
+          //                                   children: [
+          //                                     Text(data['Title']),
+          //                                     Text(data['Description']),
+          //                                     Text(data['Category']),
+          //                                     Text(data['City']),
+          //                                     Text(data['State']),
+          //                                     Text(data['Price'].toString()),
+          //                                     Center(
+          //                                       child: Column(
+          //                                         children: [
+          //                                           ElevatedButton(
+          //                                             onPressed: () async {
+          //                                               // Use 'await' to get the result of the asynchronous function
+          //                                               String? id =
+          //                                                   await getReceiverId(
+          //                                                       data['Email']);
+          //                                               // print(email);
+          //                                               // print(id);
+          //                                               addChattedWith(
+          //                                                   data['Email']);
+          //                                               addChattedWithInReceiver(
+          //                                                   data['Email']);
+          //                                               // Check if 'id' is not null before using it
+          //                                               if (id != null) {
+          //                                                 Navigator.push(
+          //                                                   context,
+          //                                                   MaterialPageRoute(
+          //                                                     builder:
+          //                                                         (context) =>
+          //                                                             ChatPage(
+          //                                                       receiverEmail:
+          //                                                           data[
+          //                                                               'Email'],
+          //                                                       receiverUserId:
+          //                                                           id,
+          //                                                     ),
+          //                                                   ),
+          //                                                 );
+          //                                               } else {
+          //                                                 // Handle the case where no matching document is found
+          //                                                 // print('No matching document found for email: $email');
+          //                                               }
+          //                                             },
+          //                                             child: const Text(
+          //                                                 'Chat with owner'),
+          //                                           ),
+          //                                         ],
+          //                                       ),
+          //                                     )
+          //                                   ],
+          //                                 ),
+          //                               ),
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ))
+          //                 ],
+          //               ),
+          //             );
+          //           }
+          //         }));
+          //   },
+          // );
+        }
+        return const CircularProgressIndicator();
+      },
     );
   }
-
-//   void _navigateToChatRoom(
-//       BuildContext context, String ownerId, String productName) {
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//         builder: (context) => ChatRoom(
-//           ownerId: ownerId,
-//           productName: productName,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class ChatRoom extends StatefulWidget {
-//   final String ownerId;
-//   final String productName;
-
-//   const ChatRoom({super.key, required this.ownerId, required this.productName});
-
-//   @override
-//   State<ChatRoom> createState() => _ChatRoomState();
-// }
-
-// class _ChatRoomState extends State<ChatRoom> {
-//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//   late User _currentUser;
-//   late TextEditingController _messageController;
-//   late CollectionReference _chatCollection;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _getCurrentUser();
-//     _messageController = TextEditingController();
-//     _chatCollection = _firestore.collection('chats');
-//   }
-
-//   void _getCurrentUser() async {
-//     _currentUser = FirebaseAuth.instance.currentUser!;
-//   }
-
-//   void _sendMessage(String message) {
-//     _chatCollection.add({
-//       'productId': widget.productName,
-//       'senderId': _currentUser.email, // Use email as the unique identifier
-//       'receiverId': widget.ownerId,
-//       'message': message,
-//       'timestamp': FieldValue.serverTimestamp(),
-//     });
-//     _messageController.clear();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Chat with ${widget.productName} Owner'),
-//       ),
-//       body: Column(
-//         children: [
-//           // Display chat messages here
-//           Expanded(
-//             child: StreamBuilder<QuerySnapshot>(
-//               stream: _chatCollection
-//                   .where('productId', isEqualTo: widget.productName)
-//                   .orderBy('timestamp', descending: true)
-//                   .snapshots(),
-//               builder: (context, snapshot) {
-//                 if (snapshot.connectionState == ConnectionState.waiting) {
-//                   return const Center(
-//                     child: CircularProgressIndicator(),
-//                   );
-//                 }
-
-//                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-//                   return const Center(
-//                     child: Text('No messages yet'),
-//                   );
-//                 }
-
-//                 final messages = snapshot.data!.docs;
-//                 return ListView.builder(
-//                   reverse: true,
-//                   itemCount: messages.length,
-//                   itemBuilder: (context, index) {
-//                     final message =
-//                         messages[index].data()! as Map<String, dynamic>;
-//                     final isMe = message['senderId'] == _currentUser.email;
-//                     return Align(
-//                       alignment:
-//                           isMe ? Alignment.centerRight : Alignment.centerLeft,
-//                       child: Container(
-//                         margin: const EdgeInsets.symmetric(
-//                             vertical: 10, horizontal: 10),
-//                         padding: const EdgeInsets.symmetric(
-//                             vertical: 10, horizontal: 15),
-//                         decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.circular(20),
-//                           color: isMe ? Colors.blue[200] : Colors.grey.shade200,
-//                         ),
-//                         child: Text(
-//                           message['message'].toString(),
-//                           style: const TextStyle(fontSize: 15),
-//                         ),
-//                       ),
-//                     );
-//                   },
-//                 );
-//               },
-//             ),
-//           ),
-
-//           // Input field for typing messages
-//           Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Row(
-//               children: [
-//                 Expanded(
-//                   child: TextField(
-//                     controller: _messageController,
-//                     decoration: const InputDecoration(
-//                       hintText: 'Type your message...',
-//                     ),
-//                   ),
-//                 ),
-//                 IconButton(
-//                   icon: const Icon(Icons.send),
-//                   onPressed: () {
-//                     if (_messageController.text.isNotEmpty) {
-//                       _sendMessage(_messageController.text);
-//                     }
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
 }
