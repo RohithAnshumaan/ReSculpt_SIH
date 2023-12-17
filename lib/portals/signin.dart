@@ -46,6 +46,7 @@ class _SigninState extends State<Signin> {
     await prefs.setString('userType', userType);
   }
 
+  bool _obscureText = true;
   bool _isLoading = false;
 
   @override
@@ -181,7 +182,6 @@ class _SigninState extends State<Signin> {
                 }
                 return null;
               },
-              keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               decoration: InputDecoration(
                 prefixIcon: const Padding(
@@ -219,28 +219,37 @@ class _SigninState extends State<Signin> {
                 }
                 return null;
               },
-              obscureText: true,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(
-                prefixIcon: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(
-                    Icons.lock,
-                    color: primaryColor,
-                  ),
+              obscureText: _obscureText,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              prefixIcon: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(
+                  Icons.lock,
+                  color: primaryColor,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.black),
-                  borderRadius: BorderRadius.circular(8),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: primaryColor),
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: primaryColor),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
           ),
+        ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -271,7 +280,7 @@ class _SigninState extends State<Signin> {
           //   child: const Text("Signin to Artisan"),
           // ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 15),
+            padding: const EdgeInsets.only(bottom: 5),
             child: ElevatedButton.icon(
               onPressed: _isLoading ? null : signinContributor,
               style: ElevatedButton.styleFrom(

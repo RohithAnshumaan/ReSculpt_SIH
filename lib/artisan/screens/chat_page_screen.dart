@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:resculpt/chat/chat_bubble.dart';
 import 'package:resculpt/chat/chat_services.dart';
+import 'package:resculpt/portals/constants.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -107,12 +108,30 @@ class _ChatPageState extends State<ChatPage> {
         Expanded(
           child: TextField(
             controller: _messageController,
-            decoration: const InputDecoration(hintText: 'Enter Message'),
+            decoration: InputDecoration(
+                  hintText: "Enter Message",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: primaryColor,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                ),
           ),
         ),
         IconButton(
           onPressed: sendMessage,
-          icon: const Icon(Icons.send),
+          icon: const Icon(Icons.send, color: primaryColor,),
         )
       ],
     );

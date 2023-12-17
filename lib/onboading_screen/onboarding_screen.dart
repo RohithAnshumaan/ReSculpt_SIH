@@ -55,7 +55,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             controller: _pageController,
             children: [
               createPage(
-                image: Image.asset('assets/Final_LOGO.png'),
+                image: Lottie.asset(
+                  'assets/page1.json',
+                  fit: BoxFit.cover,
+                ),
                 title: Constants.titleOne,
                 description: Constants.descriptionOne,
               ),
@@ -187,12 +190,12 @@ class createPage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Constants.primaryColor,
-                fontSize: 30,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: 15,
             ),
             Text(
               description,

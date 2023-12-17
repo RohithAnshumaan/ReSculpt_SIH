@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:resculpt/artisan/screens/chat_page_screen.dart';
+import 'package:resculpt/portals/constants.dart';
 
 class Display extends StatefulWidget {
   const Display({super.key, required this.documentId});
@@ -22,7 +23,6 @@ class _DisplayState extends State<Display> {
   final String? userEmail = FirebaseAuth.instance.currentUser?.email;
   late String _city = "";
   final storage = FirebaseStorage.instance.ref();
-  final List<String> list = [];
   CollectionReference dbData = FirebaseFirestore.instance.collection('waste');
 
   //updating with whom the current user has chatted
@@ -189,11 +189,7 @@ class _DisplayState extends State<Display> {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
-          String city = data['City'];
           String imgId = data['ImgId'];
-          if (city != _city) {
-            list.add(widget.documentId);
-          }
           return Column(
             children: [
               FutureBuilder(
