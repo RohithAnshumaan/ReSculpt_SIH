@@ -2,11 +2,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:resculpt/contributor/models/waste_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
 import 'package:resculpt/UniqueID/randomkey.dart';
+import 'package:resculpt/portals/constants.dart';
 
 class FillDetails extends StatefulWidget {
   const FillDetails({super.key});
@@ -173,115 +175,249 @@ class _FillDetailsState extends State<FillDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Enter item details'),
-      ),
-      body: Column(
-        children: [
-          TextField(
-              controller: _title,
-              decoration: const InputDecoration(hintText: "Enter title")),
-          TextField(
-            controller: _desc,
-            decoration: const InputDecoration(hintText: "Enter description"),
-          ),
-          DropdownMenu<dynamic>(
-              controller: _cat,
-              hintText: "type",
-              initialSelection: itemDropdownMenuEntries.first,
-              dropdownMenuEntries: itemDropdownMenuEntries),
-          TextField(
-            controller: _price,
-            decoration: const InputDecoration(hintText: "Enter price"),
-          ),
-          DropdownMenu<dynamic>(
-              controller: _city,
-              hintText: "city",
-              initialSelection: cityEntries.first,
-              dropdownMenuEntries: cityEntries),
-          DropdownMenu<dynamic>(
-              controller: _state,
-              hintText: "state",
-              initialSelection: stateEntries.first,
-              dropdownMenuEntries: stateEntries),
-          ElevatedButton(
-            onPressed: areFieldsFilled()
-                ? () async {
-                    dynamic imgId = await _pickImageFromGallery();
-                    setState(() {
-                      id = imgId;
-                      isImageUploaded = true;
-                    });
-                  }
-                : null,
-            child: const Text('Upload image'),
-          ),
-          if (isImageUploaded)
-            Column(
-              children: [
-                FutureBuilder(
-                  future: getImageUrl(id),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      // print('error : ${snapshot.error}');
-                      showAlertDialog(
-                          context, 'Error', "Error uploading image");
-                      return const Text('Try again');
-                    } else {
-                      return ListTile(
-                        subtitle: Column(
-                          children: [
-                            Card(
-                              elevation: 7,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: Image.network(
-                                        snapshot.data.toString(),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Column(
-                                        children: [
-                                          Text('Image uploaded successfully')
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    submitDetails();
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Submit details'),
-                ),
-              ],
+        backgroundColor: primaryColor,
+        title: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            "UPLOAD",
+            style: TextStyle(
+              fontSize: 34,
+              fontFamily: "Poppins",
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
-        ],
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Lottie.asset(
+                  'assets/uploadpage.json',
+                  fit: BoxFit.cover,
+                  height: 190,
+                ),
+              TextField(
+                controller: _title,
+                decoration: InputDecoration(
+                  hintText: "Enter Title",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: primaryColor,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              TextField(
+                controller: _desc,
+                decoration: InputDecoration(
+                  hintText: "Enter Description",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: primaryColor,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.0, // Adjust the width as needed
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownMenu<dynamic>(
+                    controller: _cat,
+                    hintText: "type",
+                    initialSelection: itemDropdownMenuEntries.first,
+                    dropdownMenuEntries: itemDropdownMenuEntries),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              TextField(
+                controller: _price,
+                decoration: InputDecoration(
+                  hintText: "Enter Price",
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: primaryColor,
+                      width: 2.0, // Adjust the width as needed
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.0, // Adjust the width as needed
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownMenu<dynamic>(
+                    controller: _city,
+                    hintText: "city",
+                    initialSelection: cityEntries.first,
+                    dropdownMenuEntries: cityEntries),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.0, // Adjust the width as needed
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: DropdownMenu<dynamic>(
+                    controller: _state,
+                    hintText: "state",
+                    initialSelection: stateEntries.first,
+                    dropdownMenuEntries: stateEntries),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              ElevatedButton(
+                onPressed: areFieldsFilled()
+                    ? () async {
+                        dynamic imgId = await _pickImageFromGallery();
+                        setState(() {
+                          id = imgId;
+                          isImageUploaded = true;
+                        });
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(25),
+                          bottomRight: Radius.circular(25),
+                          bottomLeft: Radius.circular(25),
+                        ),
+                      ),
+                    ),
+                child: const Text('Upload image', style: TextStyle(color: Colors.white),),
+              ),
+              if (isImageUploaded)
+                Column(
+                  children: [
+                    FutureBuilder(
+                      future: getImageUrl(id),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          // print('error : ${snapshot.error}');
+                          showAlertDialog(
+                              context, 'Error', "Error uploading image");
+                          return const Text('Try again');
+                        } else {
+                          return ListTile(
+                            subtitle: Column(
+                              children: [
+                                Card(
+                                  elevation: 7,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox(
+                                          width: 100,
+                                          height: 100,
+                                          child: Image.network(
+                                            snapshot.data.toString(),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      const Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              Text('Image uploaded successfully',style: TextStyle(fontSize: 20),)
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        submitDetails();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Submit details'),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

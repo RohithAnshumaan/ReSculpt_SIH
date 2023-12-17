@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:resculpt/artisan/screens/chat_page_screen.dart';
+import 'package:resculpt/portals/constants.dart';
 
 class Display extends StatefulWidget {
   const Display({super.key, required this.documentId});
