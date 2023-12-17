@@ -23,7 +23,6 @@ class _DisplayState extends State<Display> {
   final String? userEmail = FirebaseAuth.instance.currentUser?.email;
   late String _city = "";
   final storage = FirebaseStorage.instance.ref();
-  final List<String> list = [];
   CollectionReference dbData = FirebaseFirestore.instance.collection('waste');
 
   //updating with whom the current user has chatted
@@ -190,304 +189,120 @@ class _DisplayState extends State<Display> {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
-          String city = data['City'];
           String imgId = data['ImgId'];
-          if (city != _city) {
-            list.add(widget.documentId);
-          }
-          if (city == _city) {
-            return Column(
-              children: [
-                FutureBuilder(
-                    future: getImageUrl(imgId),
-                    builder: ((context, urlSnapshot) {
-                      if (urlSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (urlSnapshot.hasError) {
-                        // print('Error loading image: ${urlSnapshot.error}');
-                        return const Text('Error loading image');
-                      } else if (!urlSnapshot.hasData ||
-                          urlSnapshot.data == null) {
-                        return const Text('No image available');
-                      } else {
-                        return ListTile(
-                          subtitle: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal:10.0),
+          return Column(
+            children: [
+              FutureBuilder(
+                  future: getImageUrl(imgId),
+                  builder: ((context, urlSnapshot) {
+                    if (urlSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (urlSnapshot.hasError) {
+                      // print('Error loading image: ${urlSnapshot.error}');
+                      return const Text('Error loading image');
+                    } else if (!urlSnapshot.hasData ||
+                        urlSnapshot.data == null) {
+                      return const Text('No image available');
+                    } else {
+                      return ListTile(
+                        subtitle: Column(
+                          children: [
+                            Padding(
+                                padding: const EdgeInsets.all(20.0),
                                 child: Card(
-                                  surfaceTintColor: Colors.white,
-                                  elevation: 15,
-                                  shape: const RoundedRectangleBorder(),
-                                  child: Column(
+                                  elevation: 7,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Image on the left
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: SizedBox(
-                                              width: 150,
-                                              height: 170,
-                                              child: Image.network(
-                                                urlSnapshot
-                                                    .data!, // Use the retrieved URL here
-                                                fit: BoxFit
-                                                    .cover, // Adjust as per your UI requirement
-                                              ),
-                                            ),
+                                      // Image on the left
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox(
+                                          width: 100,
+                                          height: 100,
+                                          child: Image.network(
+                                            urlSnapshot
+                                                .data!, // Use the retrieved URL here
+                                            fit: BoxFit
+                                                .cover, // Adjust as per your UI requirement
                                           ),
-                                          // Text on the right
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    data['Title'],
-                                                    style:const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Text(
-                                                    data['Description'],
-                                                    style:
-                                                        const TextStyle(fontSize: 16),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Text(
-                                                    '${data['Category']}',
-                                                    style:
-                                                      const TextStyle(fontSize: 16),
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Text(
-                                                    '${data['City']}, ${data['State']}',
-                                                    style:
-                                                      const TextStyle(fontSize: 16),
-                                                  ),
-                                                  const SizedBox(height: 5),
-                                                  Row(
-                                                    children: [
-                                                      const Text(
-                                                        "Price: ",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16),
-                                                      ),
-                                                      Text(
-                                                        '${data['Price']}',
-                                                        style: const TextStyle(
-                                                            fontSize: 16),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                      // Center(
-                                      //   child: Padding(
-                                      //     padding: const EdgeInsets.only(
-                                      //         left: 10.0,
-                                      //         right: 10,
-                                      //         bottom: 10),
-                                      //     child: ElevatedButton(
-                                      //       onPressed: () async {
-                                      //         // Use 'await' to get the result of the asynchronous function
-                                      //         String? id = await getReceiverId(
-                                      //             data['Email']);
-                                      //         addChattedWith(data['Email']);
-                                      //         addChattedWithInReceiver(
-                                      //             data['Email']);
-                                      //         // Check if 'id' is not null before using it
-                                      //         if (id != null) {
-                                      //           // ignore: use_build_context_synchronously
-                                      //           Navigator.push(
-                                      //             context,
-                                      //             MaterialPageRoute(
-                                      //               builder: (context) =>
-                                      //                   ChatPage(
-                                      //                 receiverEmail:
-                                      //                     data['Email'],
-                                      //                 receiverUserId: id,
-                                      //               ),
-                                      //             ),
-                                      //           );
-                                      //         } else {
-                                      //           // Handle the case where no matching document is found
-                                      //           // print('No matching document found for email: $email');
-                                      //         }
-                                      //       },
-                                      //       style: ElevatedButton.styleFrom(
-                                      //         backgroundColor: primaryColor,
-                                      //         minimumSize: const Size(
-                                      //             double.infinity, 56),
-                                      //         shape:
-                                      //             const RoundedRectangleBorder(
-                                      //           borderRadius: BorderRadius.only(
-                                      //             topLeft: Radius.circular(10),
-                                      //             topRight: Radius.circular(25),
-                                      //             bottomRight:
-                                      //                 Radius.circular(25),
-                                      //             bottomLeft:
-                                      //                 Radius.circular(25),
-                                      //           ),
-                                      //         ),
-                                      //       ),
-                                      //       child: const Text(
-                                      //         'Chat with owner',
-                                      //         style: TextStyle(
-                                      //             color: Colors.white),
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ),
+                                      // Text on the right
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(data['Title']),
+                                              Text(data['Description']),
+                                              Text(data['Category']),
+                                              Text(data['City']),
+                                              Text(data['State']),
+                                              Text(data['Price'].toString()),
+                                              Center(
+                                                child: Column(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        // Use 'await' to get the result of the asynchronous function
+                                                        String? id =
+                                                            await getReceiverId(
+                                                                data['Email']);
+                                                        // print(email);
+                                                        // print(id);
+                                                        addChattedWith(
+                                                            data['Email']);
+                                                        addChattedWithInReceiver(
+                                                            data['Email']);
+                                                        // Check if 'id' is not null before using it
+                                                        if (id != null) {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      ChatPage(
+                                                                receiverEmail:
+                                                                    data[
+                                                                        'Email'],
+                                                                receiverUserId:
+                                                                    id,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          // Handle the case where no matching document is found
+                                                          // print('No matching document found for email: $email');
+                                                        }
+                                                      },
+                                                      child: const Text(
+                                                          'Chat with owner'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      }
-                    })),
-              ],
-            );
-          }
-          // return ListView.builder(
-          //   itemCount: list.length,
-          //   itemBuilder: (context, index) {
-          //     return FutureBuilder(
-          //         future: getImageUrl(imgId),
-          //         builder: ((context, urlSnapshot) {
-          //           if (urlSnapshot.connectionState ==
-          //               ConnectionState.waiting) {
-          //             return const CircularProgressIndicator();
-          //           } else if (urlSnapshot.hasError) {
-          //             // print('Error loading image: ${urlSnapshot.error}');
-          //             return const Text('Error loading image');
-          //           } else if (!urlSnapshot.hasData ||
-          //               urlSnapshot.data == null) {
-          //             return const Text('No image available');
-          //           } else {
-          //             return ListTile(
-          //               subtitle: Column(
-          //                 children: [
-          //                   const Text('Items you may like'),
-          //                   Padding(
-          //                       padding: const EdgeInsets.all(20.0),
-          //                       child: Card(
-          //                         elevation: 7,
-          //                         shape: RoundedRectangleBorder(
-          //                           borderRadius: BorderRadius.circular(20),
-          //                         ),
-          //                         child: Row(
-          //                           crossAxisAlignment:
-          //                               CrossAxisAlignment.start,
-          //                           children: [
-          //                             // Image on the left
-          //                             Padding(
-          //                               padding: const EdgeInsets.all(8.0),
-          //                               child: SizedBox(
-          //                                 width: 100,
-          //                                 height: 100,
-          //                                 child: Image.network(
-          //                                   urlSnapshot
-          //                                       .data!, // Use the retrieved URL here
-          //                                   fit: BoxFit
-          //                                       .cover, // Adjust as per your UI requirement
-          //                                 ),
-          //                               ),
-          //                             ),
-          //                             // Text on the right
-          //                             Expanded(
-          //                               child: Padding(
-          //                                 padding: const EdgeInsets.all(8.0),
-          //                                 child: Column(
-          //                                   crossAxisAlignment:
-          //                                       CrossAxisAlignment.start,
-          //                                   children: [
-          //                                     Text(data['Title']),
-          //                                     Text(data['Description']),
-          //                                     Text(data['Category']),
-          //                                     Text(data['City']),
-          //                                     Text(data['State']),
-          //                                     Text(data['Price'].toString()),
-          //                                     Center(
-          //                                       child: Column(
-          //                                         children: [
-          //                                           ElevatedButton(
-          //                                             onPressed: () async {
-          //                                               // Use 'await' to get the result of the asynchronous function
-          //                                               String? id =
-          //                                                   await getReceiverId(
-          //                                                       data['Email']);
-          //                                               // print(email);
-          //                                               // print(id);
-          //                                               addChattedWith(
-          //                                                   data['Email']);
-          //                                               addChattedWithInReceiver(
-          //                                                   data['Email']);
-          //                                               // Check if 'id' is not null before using it
-          //                                               if (id != null) {
-          //                                                 Navigator.push(
-          //                                                   context,
-          //                                                   MaterialPageRoute(
-          //                                                     builder:
-          //                                                         (context) =>
-          //                                                             ChatPage(
-          //                                                       receiverEmail:
-          //                                                           data[
-          //                                                               'Email'],
-          //                                                       receiverUserId:
-          //                                                           id,
-          //                                                     ),
-          //                                                   ),
-          //                                                 );
-          //                                               } else {
-          //                                                 // Handle the case where no matching document is found
-          //                                                 // print('No matching document found for email: $email');
-          //                                               }
-          //                                             },
-          //                                             child: const Text(
-          //                                                 'Chat with owner'),
-          //                                           ),
-          //                                         ],
-          //                                       ),
-          //                                     )
-          //                                   ],
-          //                                 ),
-          //                               ),
-          //                             ),
-          //                           ],
-          //                         ),
-          //                       ))
-          //                 ],
-          //               ),
-          //             );
-          //           }
-          //         }));
-          //   },
-          // );
+                                ))
+                          ],
+                        ),
+                      );
+                    }
+                  })),
+            ],
+          );
         }
         return const CircularProgressIndicator();
       },
