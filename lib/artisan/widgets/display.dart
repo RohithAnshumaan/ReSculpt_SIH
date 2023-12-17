@@ -194,237 +194,119 @@ class _DisplayState extends State<Display> {
           if (city != _city) {
             list.add(widget.documentId);
           }
-          if (city == _city) {
-            return Column(
-              children: [
-                FutureBuilder(
-                    future: getImageUrl(imgId),
-                    builder: ((context, urlSnapshot) {
-                      if (urlSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (urlSnapshot.hasError) {
-                        // print('Error loading image: ${urlSnapshot.error}');
-                        return const Text('Error loading image');
-                      } else if (!urlSnapshot.hasData ||
-                          urlSnapshot.data == null) {
-                        return const Text('No image available');
-                      } else {
-                        return ListTile(
-                          subtitle: Column(
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Card(
-                                    elevation: 7,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Image on the left
-                                        Padding(
+          return Column(
+            children: [
+              FutureBuilder(
+                  future: getImageUrl(imgId),
+                  builder: ((context, urlSnapshot) {
+                    if (urlSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (urlSnapshot.hasError) {
+                      // print('Error loading image: ${urlSnapshot.error}');
+                      return const Text('Error loading image');
+                    } else if (!urlSnapshot.hasData ||
+                        urlSnapshot.data == null) {
+                      return const Text('No image available');
+                    } else {
+                      return ListTile(
+                        subtitle: Column(
+                          children: [
+                            Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Card(
+                                  elevation: 7,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Image on the left
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: SizedBox(
+                                          width: 100,
+                                          height: 100,
+                                          child: Image.network(
+                                            urlSnapshot
+                                                .data!, // Use the retrieved URL here
+                                            fit: BoxFit
+                                                .cover, // Adjust as per your UI requirement
+                                          ),
+                                        ),
+                                      ),
+                                      // Text on the right
+                                      Expanded(
+                                        child: Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: SizedBox(
-                                            width: 100,
-                                            height: 100,
-                                            child: Image.network(
-                                              urlSnapshot
-                                                  .data!, // Use the retrieved URL here
-                                              fit: BoxFit
-                                                  .cover, // Adjust as per your UI requirement
-                                            ),
-                                          ),
-                                        ),
-                                        // Text on the right
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(data['Title']),
-                                                Text(data['Description']),
-                                                Text(data['Category']),
-                                                Text(data['City']),
-                                                Text(data['State']),
-                                                Text(data['Price'].toString()),
-                                                Center(
-                                                  child: Column(
-                                                    children: [
-                                                      ElevatedButton(
-                                                        onPressed: () async {
-                                                          // Use 'await' to get the result of the asynchronous function
-                                                          String? id =
-                                                              await getReceiverId(
-                                                                  data[
-                                                                      'Email']);
-                                                          // print(email);
-                                                          // print(id);
-                                                          addChattedWith(
-                                                              data['Email']);
-                                                          addChattedWithInReceiver(
-                                                              data['Email']);
-                                                          // Check if 'id' is not null before using it
-                                                          if (id != null) {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        ChatPage(
-                                                                  receiverEmail:
-                                                                      data[
-                                                                          'Email'],
-                                                                  receiverUserId:
-                                                                      id,
-                                                                ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(data['Title']),
+                                              Text(data['Description']),
+                                              Text(data['Category']),
+                                              Text(data['City']),
+                                              Text(data['State']),
+                                              Text(data['Price'].toString()),
+                                              Center(
+                                                child: Column(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        // Use 'await' to get the result of the asynchronous function
+                                                        String? id =
+                                                            await getReceiverId(
+                                                                data['Email']);
+                                                        // print(email);
+                                                        // print(id);
+                                                        addChattedWith(
+                                                            data['Email']);
+                                                        addChattedWithInReceiver(
+                                                            data['Email']);
+                                                        // Check if 'id' is not null before using it
+                                                        if (id != null) {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      ChatPage(
+                                                                receiverEmail:
+                                                                    data[
+                                                                        'Email'],
+                                                                receiverUserId:
+                                                                    id,
                                                               ),
-                                                            );
-                                                          } else {
-                                                            // Handle the case where no matching document is found
-                                                            // print('No matching document found for email: $email');
-                                                          }
-                                                        },
-                                                        child: const Text(
-                                                            'Chat with owner'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          // Handle the case where no matching document is found
+                                                          // print('No matching document found for email: $email');
+                                                        }
+                                                      },
+                                                      child: const Text(
+                                                          'Chat with owner'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ))
-                            ],
-                          ),
-                        );
-                      }
-                    })),
-              ],
-            );
-          }
-          // return ListView.builder(
-          //   itemCount: list.length,
-          //   itemBuilder: (context, index) {
-          //     return FutureBuilder(
-          //         future: getImageUrl(imgId),
-          //         builder: ((context, urlSnapshot) {
-          //           if (urlSnapshot.connectionState ==
-          //               ConnectionState.waiting) {
-          //             return const CircularProgressIndicator();
-          //           } else if (urlSnapshot.hasError) {
-          //             // print('Error loading image: ${urlSnapshot.error}');
-          //             return const Text('Error loading image');
-          //           } else if (!urlSnapshot.hasData ||
-          //               urlSnapshot.data == null) {
-          //             return const Text('No image available');
-          //           } else {
-          //             return ListTile(
-          //               subtitle: Column(
-          //                 children: [
-          //                   const Text('Items you may like'),
-          //                   Padding(
-          //                       padding: const EdgeInsets.all(20.0),
-          //                       child: Card(
-          //                         elevation: 7,
-          //                         shape: RoundedRectangleBorder(
-          //                           borderRadius: BorderRadius.circular(20),
-          //                         ),
-          //                         child: Row(
-          //                           crossAxisAlignment:
-          //                               CrossAxisAlignment.start,
-          //                           children: [
-          //                             // Image on the left
-          //                             Padding(
-          //                               padding: const EdgeInsets.all(8.0),
-          //                               child: SizedBox(
-          //                                 width: 100,
-          //                                 height: 100,
-          //                                 child: Image.network(
-          //                                   urlSnapshot
-          //                                       .data!, // Use the retrieved URL here
-          //                                   fit: BoxFit
-          //                                       .cover, // Adjust as per your UI requirement
-          //                                 ),
-          //                               ),
-          //                             ),
-          //                             // Text on the right
-          //                             Expanded(
-          //                               child: Padding(
-          //                                 padding: const EdgeInsets.all(8.0),
-          //                                 child: Column(
-          //                                   crossAxisAlignment:
-          //                                       CrossAxisAlignment.start,
-          //                                   children: [
-          //                                     Text(data['Title']),
-          //                                     Text(data['Description']),
-          //                                     Text(data['Category']),
-          //                                     Text(data['City']),
-          //                                     Text(data['State']),
-          //                                     Text(data['Price'].toString()),
-          //                                     Center(
-          //                                       child: Column(
-          //                                         children: [
-          //                                           ElevatedButton(
-          //                                             onPressed: () async {
-          //                                               // Use 'await' to get the result of the asynchronous function
-          //                                               String? id =
-          //                                                   await getReceiverId(
-          //                                                       data['Email']);
-          //                                               // print(email);
-          //                                               // print(id);
-          //                                               addChattedWith(
-          //                                                   data['Email']);
-          //                                               addChattedWithInReceiver(
-          //                                                   data['Email']);
-          //                                               // Check if 'id' is not null before using it
-          //                                               if (id != null) {
-          //                                                 Navigator.push(
-          //                                                   context,
-          //                                                   MaterialPageRoute(
-          //                                                     builder:
-          //                                                         (context) =>
-          //                                                             ChatPage(
-          //                                                       receiverEmail:
-          //                                                           data[
-          //                                                               'Email'],
-          //                                                       receiverUserId:
-          //                                                           id,
-          //                                                     ),
-          //                                                   ),
-          //                                                 );
-          //                                               } else {
-          //                                                 // Handle the case where no matching document is found
-          //                                                 // print('No matching document found for email: $email');
-          //                                               }
-          //                                             },
-          //                                             child: const Text(
-          //                                                 'Chat with owner'),
-          //                                           ),
-          //                                         ],
-          //                                       ),
-          //                                     )
-          //                                   ],
-          //                                 ),
-          //                               ),
-          //                             ),
-          //                           ],
-          //                         ),
-          //                       ))
-          //                 ],
-          //               ),
-          //             );
-          //           }
-          //         }));
-          //   },
-          // );
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                          ],
+                        ),
+                      );
+                    }
+                  })),
+            ],
+          );
         }
         return const CircularProgressIndicator();
       },
