@@ -16,10 +16,13 @@ class FillDetails extends StatefulWidget {
 }
 
 class _FillDetailsState extends State<FillDetails> {
+  bool isImageUploaded = false;
+  dynamic id = '';
   late File _selectedImage;
   final _db = FirebaseFirestore.instance;
   final storageRef = FirebaseStorage.instance.ref();
   final email = FirebaseAuth.instance.currentUser?.email;
+  final storage = FirebaseStorage.instance.ref();
 
   List<DropdownMenuEntry<dynamic>> itemDropdownMenuEntries = [
     const DropdownMenuEntry(value: 1, label: "plastic"),
@@ -61,6 +64,13 @@ class _FillDetailsState extends State<FillDetails> {
     _state = TextEditingController();
     _price = TextEditingController();
 
+    _title.addListener(updateButtonState);
+    _desc.addListener(updateButtonState);
+    _cat.addListener(updateButtonState);
+    _city.addListener(updateButtonState);
+    _state.addListener(updateButtonState);
+    _price.addListener(updateButtonState);
+
     super.initState();
   }
 
@@ -73,6 +83,10 @@ class _FillDetailsState extends State<FillDetails> {
     _state.dispose();
     _price.dispose();
     super.dispose();
+  }
+
+  void updateButtonState() {
+    setState(() {}); // Trigger rebuild to update button state
   }
 
   void showAlertDialog(BuildContext context, String title, String message) {
@@ -98,6 +112,23 @@ class _FillDetailsState extends State<FillDetails> {
     );
   }
 
+  Future<String> getImageUrl(dynamic id) async {
+    final waste = storage.child('waste');
+    // final mail = waste.child('$userEmail');
+    final imgRef = waste.child('$id.png');
+    final networkImgUrl = await imgRef.getDownloadURL();
+    return networkImgUrl;
+  }
+
+  bool areFieldsFilled() {
+    return _title.text.isNotEmpty &&
+        _desc.text.isNotEmpty &&
+        _cat.text.isNotEmpty &&
+        _price.text.isNotEmpty &&
+        _city.text.isNotEmpty &&
+        _state.text.isNotEmpty;
+  }
+
   Future submitDetails() async {
     final title = _title.text.trim();
     final description = _desc.text.trim();
@@ -105,35 +136,19 @@ class _FillDetailsState extends State<FillDetails> {
     final state = _state.text.trim();
     final city = _city.text.trim();
     final double price = double.parse(_price.text.trim());
-    final dynamic imgId = await _pickImageFromGallery();
 
-    if (imgId == null) {
-      return AlertDialog(
-        title: const Text('ERROR'),
-        content: const Text('Image not found.'),
-        actions: [
-          TextButton(
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Colors.deepPurple),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-        ],
-      );
+    if (id != null) {
+      WasteObject obj = WasteObject(
+          imgId: id,
+          email: email,
+          title: title,
+          desc: description,
+          cat: category,
+          city: city,
+          state: state,
+          price: price);
+      await _db.collection('waste').add(obj.toJson());
     }
-    WasteObject obj = WasteObject(
-        imgId: imgId,
-        email: email,
-        title: title,
-        desc: description,
-        cat: category,
-        city: city,
-        state: state,
-        price: price);
-    await _db.collection('waste').add(obj.toJson());
   }
 
   Future _storeImageToDb(File selectedImage) async {
@@ -191,12 +206,81 @@ class _FillDetailsState extends State<FillDetails> {
               initialSelection: stateEntries.first,
               dropdownMenuEntries: stateEntries),
           ElevatedButton(
-            onPressed: () {
-              submitDetails();
-              Navigator.pop(context);
-            },
-            child: const Text('Submit details'),
+            onPressed: areFieldsFilled()
+                ? () async {
+                    dynamic imgId = await _pickImageFromGallery();
+                    setState(() {
+                      id = imgId;
+                      isImageUploaded = true;
+                    });
+                  }
+                : null,
+            child: const Text('Upload image'),
           ),
+          if (isImageUploaded)
+            Column(
+              children: [
+                FutureBuilder(
+                  future: getImageUrl(id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      // print('error : ${snapshot.error}');
+                      showAlertDialog(
+                          context, 'Error', "Error uploading image");
+                      return const Text('Try again');
+                    } else {
+                      return ListTile(
+                        subtitle: Column(
+                          children: [
+                            Card(
+                              elevation: 7,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: Image.network(
+                                        snapshot.data.toString(),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Column(
+                                        children: [
+                                          Text('Image uploaded successfully')
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    submitDetails();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Submit details'),
+                ),
+              ],
+            ),
         ],
       ),
     );

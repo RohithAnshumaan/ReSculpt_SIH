@@ -22,24 +22,16 @@ class _ArtisanHomeState extends State<ArtisanHome> {
     docIds.clear(); // Clear the previous list
 
     if (searchQuery.isEmpty) {
-      // Retrieve all documents with the current user's email
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('waste')
-          .where('Email',
-              isEqualTo:
-                  currentUserEmail) // Replace 'currentUserEmail' with the actual variable storing the user's email
-          .get();
+      // Retrieve all documents
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('waste').get();
       for (var document in querySnapshot.docs) {
         docIds.add(document.reference.id);
       }
     } else {
-      // Retrieve documents based on the search query and the current user's email
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('waste')
-          .where('Email',
-              isEqualTo:
-                  currentUserEmail) // Replace 'currentUserEmail' with the actual variable storing the user's email
-          .get();
+      // Retrieve documents based on the search query
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('waste').get();
       for (var document in querySnapshot.docs) {
         String title = document['Title'] ?? '';
         if (title.toLowerCase().contains(searchQuery.toLowerCase())) {

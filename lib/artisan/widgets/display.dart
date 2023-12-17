@@ -179,11 +179,6 @@ class _DisplayState extends State<Display> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
       future: dbData.doc(widget.documentId).get(),
