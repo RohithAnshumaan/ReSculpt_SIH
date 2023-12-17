@@ -25,6 +25,7 @@ dependencies:
   geolocator: ^10.1.0
   permission_handler: ^11.1.0
   shared_preferences: ^2.2.2
+  cached_network_image: ^3.3.0
 
 dev_dependencies:
   flutter_test:
@@ -36,7 +37,6 @@ flutter:
 
   assets:
     - assets/
-    - assets/RiveAssets/
 
   fonts:
     - family: Intel

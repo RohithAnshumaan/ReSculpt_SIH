@@ -6,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:resculpt/artisan/screens/chat_page_screen.dart';
-import 'package:resculpt/portals/constants.dart';
 
 class Display extends StatefulWidget {
   const Display({super.key, required this.documentId});
@@ -21,7 +20,7 @@ class _DisplayState extends State<Display> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final String? userEmail = FirebaseAuth.instance.currentUser?.email;
-  late String _city = "";
+  late String _city_ = "";
   final storage = FirebaseStorage.instance.ref();
   CollectionReference dbData = FirebaseFirestore.instance.collection('waste');
 
@@ -111,22 +110,14 @@ class _DisplayState extends State<Display> {
     if (status == LocationPermission.denied) {
       await Geolocator.requestPermission();
     }
-
-    // String city = await _getCurrentLocation();
-    // setState(() {
-    //   _city = city;
-    // });
   }
 
   Future<void> _initializeCity() async {
     await _requestLocationPermission(); // Request location permission
-    String city = await _getCurrentLocation(); // Get current location
-    setState(() {
-      _city = city; // Set the obtained city in state
-    });
+    await _getCurrentLocation(); // Get current location
   }
 
-  Future<String> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -140,32 +131,14 @@ class _DisplayState extends State<Display> {
       if (placemarks.isNotEmpty) {
         Placemark placemark = placemarks[0];
         setState(() {
-          // _area = placemark.subAdministrativeArea ?? "";
-          _city = placemark.locality ?? "";
-          // _locality = placemark.subLocality ?? "";
-          // _state = placemark.administrativeArea ?? "";
-          // _postalCode = placemark.postalCode ?? "";
+          _city_ = placemark.locality ?? "";
         });
       } else {
-        setState(() {
-          // _area = "Not available";
-          _city = "Not available";
-          // _locality = "Not available";
-          // _state = "Not available";
-          // _postalCode = "Not available";
-        });
+        //error
       }
     } catch (e) {
       //print("Error: $e");
-      setState(() {
-        // _area = "Error getting location";
-        _city = "Error getting location";
-        // _locality = "Error getting location";
-        // _state = "Error getting location";
-        // _postalCode = "Error getting location";
-      });
     }
-    return _city;
   }
 
   Future<String> getImageUrl(dynamic id) async {
@@ -185,126 +158,133 @@ class _DisplayState extends State<Display> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
-        }
-        if (snapshot.connectionState == ConnectionState.done) {
+        } else if (snapshot.hasError) {
+          // print("error : ${snapshot.error}");
+          return const Text("error");
+        } else {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           String imgId = data['ImgId'];
-          return Column(
-            children: [
-              FutureBuilder(
-                  future: getImageUrl(imgId),
-                  builder: ((context, urlSnapshot) {
-                    if (urlSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (urlSnapshot.hasError) {
-                      // print('Error loading image: ${urlSnapshot.error}');
-                      return const Text('Error loading image');
-                    } else if (!urlSnapshot.hasData ||
-                        urlSnapshot.data == null) {
-                      return const Text('No image available');
-                    } else {
-                      return ListTile(
-                        subtitle: Column(
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Card(
-                                  elevation: 7,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Image on the left
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: SizedBox(
-                                          width: 100,
-                                          height: 100,
-                                          child: Image.network(
-                                            urlSnapshot
-                                                .data!, // Use the retrieved URL here
-                                            fit: BoxFit
-                                                .cover, // Adjust as per your UI requirement
-                                          ),
-                                        ),
-                                      ),
-                                      // Text on the right
-                                      Expanded(
-                                        child: Padding(
+          String place = data['City'];
+          if (place == _city_) {
+            return Column(
+              children: [
+                FutureBuilder(
+                    future: getImageUrl(imgId),
+                    builder: ((context, urlSnapshot) {
+                      if (urlSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (urlSnapshot.hasError) {
+                        // print('Error loading image: ${urlSnapshot.error}');
+                        return const Text('Error loading image');
+                      } else if (!urlSnapshot.hasData ||
+                          urlSnapshot.data == null) {
+                        return const Text('No image available');
+                      } else {
+                        return ListTile(
+                          subtitle: Column(
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Card(
+                                    elevation: 7,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Image on the left
+                                        Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(data['Title']),
-                                              Text(data['Description']),
-                                              Text(data['Category']),
-                                              Text(data['City']),
-                                              Text(data['State']),
-                                              Text(data['Price'].toString()),
-                                              Center(
-                                                child: Column(
-                                                  children: [
-                                                    ElevatedButton(
-                                                      onPressed: () async {
-                                                        // Use 'await' to get the result of the asynchronous function
-                                                        String? id =
-                                                            await getReceiverId(
-                                                                data['Email']);
-                                                        // print(email);
-                                                        // print(id);
-                                                        addChattedWith(
-                                                            data['Email']);
-                                                        addChattedWithInReceiver(
-                                                            data['Email']);
-                                                        // Check if 'id' is not null before using it
-                                                        if (id != null) {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      ChatPage(
-                                                                receiverEmail:
-                                                                    data[
-                                                                        'Email'],
-                                                                receiverUserId:
-                                                                    id,
-                                                              ),
-                                                            ),
-                                                          );
-                                                        } else {
-                                                          // Handle the case where no matching document is found
-                                                          // print('No matching document found for email: $email');
-                                                        }
-                                                      },
-                                                      child: const Text(
-                                                          'Chat with owner'),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 100,
+                                            child: Image.network(
+                                              urlSnapshot
+                                                  .data!, // Use the retrieved URL here
+                                              fit: BoxFit
+                                                  .cover, // Adjust as per your UI requirement
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ))
-                          ],
-                        ),
-                      );
-                    }
-                  })),
-            ],
-          );
+                                        // Text on the right
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(data['Title']),
+                                                Text(data['Description']),
+                                                Text(data['Category']),
+                                                Text(data['City']),
+                                                Text(data['State']),
+                                                Text(data['Price'].toString()),
+                                                Center(
+                                                  child: Column(
+                                                    children: [
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          // Use 'await' to get the result of the asynchronous function
+                                                          String? id =
+                                                              await getReceiverId(
+                                                                  data[
+                                                                      'Email']);
+                                                          // print(email);
+                                                          // print(id);
+                                                          addChattedWith(
+                                                              data['Email']);
+                                                          addChattedWithInReceiver(
+                                                              data['Email']);
+                                                          // Check if 'id' is not null before using it
+                                                          if (id != null) {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ChatPage(
+                                                                  receiverEmail:
+                                                                      data[
+                                                                          'Email'],
+                                                                  receiverUserId:
+                                                                      id,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            // Handle the case where no matching document is found
+                                                            // print('No matching document found for email: $email');
+                                                          }
+                                                        },
+                                                        child: const Text(
+                                                            'Chat with owner'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        );
+                      }
+                    })),
+              ],
+            );
+          } else {
+            return Container();
+          }
         }
-        return const CircularProgressIndicator();
       },
     );
   }

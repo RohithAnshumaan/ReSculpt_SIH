@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:resculpt/chat/all_chats.dart';
 import 'package:resculpt/artisan/screens/prod_details_screen.dart';
 import 'package:resculpt/artisan/widgets/display.dart';
-import 'package:resculpt/main.dart';
 import 'package:resculpt/portals/constants.dart';
 import 'package:resculpt/portals/my_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';

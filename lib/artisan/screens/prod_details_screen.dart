@@ -207,21 +207,21 @@ class _ProdDetailsState extends State<ProdDetails> {
                 decoration: InputDecoration(
                   hintText: "Enter Title",
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: Colors.black,
                       width: 2.0, // Adjust the width as needed
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: primaryColor,
                       width: 2.0, // Adjust the width as needed
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 ),
               ),
               const SizedBox(
@@ -232,21 +232,21 @@ class _ProdDetailsState extends State<ProdDetails> {
                 decoration: InputDecoration(
                   hintText: "Enter Description",
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: Colors.black,
                       width: 2.0, // Adjust the width as needed
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: primaryColor,
                       width: 2.0, // Adjust the width as needed
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 ),
               ),
               const SizedBox(
@@ -254,11 +254,12 @@ class _ProdDetailsState extends State<ProdDetails> {
               ),
               Container(
                 decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0, // Adjust the width as needed
-        ),
-        borderRadius: BorderRadius.circular(8),),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.0, // Adjust the width as needed
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: DropdownMenu<dynamic>(
                     controller: _quan,
                     hintText: "quantity",
@@ -273,21 +274,21 @@ class _ProdDetailsState extends State<ProdDetails> {
                 decoration: InputDecoration(
                   hintText: "Enter price",
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: Colors.black,
                       width: 2.0, // Adjust the width as needed
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: primaryColor,
                       width: 2.0, // Adjust the width as needed
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 ),
               ),
               const SizedBox(
@@ -295,11 +296,12 @@ class _ProdDetailsState extends State<ProdDetails> {
               ),
               Container(
                 decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0, // Adjust the width as needed
-        ),
-        borderRadius: BorderRadius.circular(8),),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.0, // Adjust the width as needed
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: DropdownMenu<dynamic>(
                     controller: _city,
                     hintText: "city",
@@ -311,11 +313,12 @@ class _ProdDetailsState extends State<ProdDetails> {
               ),
               Container(
                 decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0, // Adjust the width as needed
-        ),
-        borderRadius: BorderRadius.circular(8),),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1.0, // Adjust the width as needed
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: DropdownMenu<dynamic>(
                     controller: _state,
                     hintText: "state",
@@ -377,7 +380,7 @@ class _ProdDetailsState extends State<ProdDetails> {
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -395,7 +398,9 @@ class _ProdDetailsState extends State<ProdDetails> {
                                           padding: EdgeInsets.all(8.0),
                                           child: Center(
                                             child: Text(
-                                                'Image uploaded successfully', style: TextStyle(fontSize: 20),),
+                                              'Image uploaded successfully',
+                                              style: TextStyle(fontSize: 20),
+                                            ),
                                           ),
                                         ),
                                       ),
