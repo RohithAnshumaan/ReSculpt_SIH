@@ -20,6 +20,8 @@ class _SignupState extends State<Signup> {
   final _passwordController = TextEditingController();
   final _cpasswordController = TextEditingController();
 
+  bool _obscureText = true;
+  bool _obscureText2 = true;
   bool _isLoading = false;
 
   @override
@@ -159,7 +161,6 @@ class _SignupState extends State<Signup> {
               }
               return null;
             },
-            keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               prefixIcon: const Padding(
@@ -197,7 +198,6 @@ class _SignupState extends State<Signup> {
               }
               return null;
             },
-            keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               prefixIcon: const Padding(
@@ -235,8 +235,7 @@ class _SignupState extends State<Signup> {
               }
               return null;
             },
-            obscureText: true,
-            keyboardType: TextInputType.emailAddress,
+            obscureText: _obscureText,
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               prefixIcon: const Padding(
@@ -245,6 +244,16 @@ class _SignupState extends State<Signup> {
                   Icons.lock,
                   color: primaryColor,
                 ),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
               ),
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black),
@@ -273,8 +282,8 @@ class _SignupState extends State<Signup> {
               }
               return null;
             },
-            obscureText: true,
-            keyboardType: TextInputType.emailAddress,
+            obscureText: _obscureText2,
+            textInputAction: TextInputAction.next,
             decoration: InputDecoration(
               prefixIcon: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -282,6 +291,16 @@ class _SignupState extends State<Signup> {
                   Icons.lock,
                   color: primaryColor,
                 ),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText2 ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText2 = !_obscureText2;
+                  });
+                },
               ),
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black),

@@ -81,50 +81,120 @@ class _GetDataState extends State<GetData> {
                     return const Text('No image available');
                   } else {
                     return ListTile(
-                        subtitle: Column(children: [
-                      Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Card(
-                            elevation: 7,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Image on the left
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Image.network(
-                                      urlSnapshot
-                                          .data!, // Use the retrieved URL here
-                                      fit: BoxFit
-                                          .cover, // Adjust as per your UI requirement
-                                    ),
+                          subtitle: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal:10.0, vertical: 10),
+                                child: Card(
+                                  surfaceTintColor: Colors.white,
+                                  elevation: 15,
+                                  shape: const RoundedRectangleBorder(),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Image on the left
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              width: 150,
+                                              height: 170,
+                                              child: Image.network(
+                                                urlSnapshot
+                                                    .data!, // Use the retrieved URL here
+                                                fit: BoxFit
+                                                    .cover, // Adjust as per your UI requirement
+                                              ),
+                                            ),
+                                          ),
+                                          // Text on the right
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    title,
+                                                    style:const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  Text(
+                                                    desc,
+                                                    style:
+                                                        const TextStyle(fontSize: 16),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  Text(
+                                                    cat,
+                                                    style:
+                                                      const TextStyle(fontSize: 16),
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        city,
+                                                        style:
+                                                          const TextStyle(fontSize: 16),
+                                                      ),
+                                                      const Text(
+                                                        ", ",
+                                                        style:
+                                                          TextStyle(fontSize: 16),
+                                                      ), 
+                                                      ],
+                                                  ),                                                     
+                                                      Text(
+                                                        state,
+                                                        style:
+                                                          const TextStyle(fontSize: 16),
+                                                      ),
+                                                    
+                                                  const SizedBox(height: 5),
+                                                  Row(
+                                                    children: [
+                                                      const Text(
+                                                        "Price: ",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16),
+                                                      ),
+                                                      Text(
+                                                        price.toString(),
+                                                        style: const TextStyle(
+                                                            fontSize: 16),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),                                     
+                                    ],
                                   ),
                                 ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        Text(title),
-                                        Text(desc),
-                                        Text(cat),
-                                        Text(city),
-                                        Text(state),
-                                        Text(price.toString()),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ))
-                    ]));
+                              )
+                            ],
+                          ),
+                        );
                   }
                 },
               );

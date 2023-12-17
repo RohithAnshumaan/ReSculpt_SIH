@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:resculpt/artisan/screens/chat_page_screen.dart';
+import 'package:resculpt/portals/constants.dart';
 
 class AllChats extends StatefulWidget {
   const AllChats({super.key});
@@ -15,7 +16,13 @@ class _AllChatsState extends State<AllChats> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("all chats"),
+        backgroundColor: primaryColor,
+        title: const Text("CHAT AREA",style: TextStyle(
+                  fontSize: 34,
+                  fontFamily: "Poppins",
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),),
       ),
       body: _buildUsersList(),
     );
@@ -106,7 +113,12 @@ class _AllChatsState extends State<AllChats> {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
     return ListTile(
-      title: Text(data['uname']),
+      title: Row(
+        children: [
+          const Icon(Icons.chat, color: primaryColor,),const SizedBox(width: 5,),
+          Text(data['uname'], style:const TextStyle(fontSize: 20),),
+        ],
+      ),
       onTap: () {
         Navigator.push(
           context,

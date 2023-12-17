@@ -31,7 +31,6 @@ void showCustomDialog(BuildContext context, {required ValueChanged onValue}) {
             ),
             child: Container(
               padding: const EdgeInsets.all(8),
-              color: const Color(0xFFEEF1F8),
               child: Center(
                 child: SingleChildScrollView(
                   child: Column(
